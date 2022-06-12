@@ -16,11 +16,13 @@ var selectedScag = 0;
 function updateSubLayout(m) {
     svg.selectAll(".force" + m).remove();
 
+    var xPos = xStep - forceSize / 2 + m * XGAP_;
+
     var svg2 = svg.append("svg")
         .attr("class", "force" + m)
         .attr("width", forceSize)
         .attr("height", forceSize)
-        .attr("x", xStep - forceSize / 2 + m * XGAP_)
+        .attr("x", xPos)
         .attr("y", 26);
     /* svg2.append("rect")
      .attr("width", "100%")
@@ -29,7 +31,7 @@ function updateSubLayout(m) {
      .attr("fill-opacity", 0.5);*/
     allSVG.push(svg2);
 
-    var size = 20;
+    var size = 50;
     // var size = 60;//TODO: This is for the teaser only (switch back the previous one for normal page)
     var padding = 0;
 
@@ -55,11 +57,17 @@ function updateSubLayout(m) {
         .style("stroke-width", 0.1);
 
     var dataPoints = [];
-    for (var c = 0; c < numMonth; c++) {
+    for (var key in dataS.nodes_info){
         var obj = {};
-        obj.country = dataS.Countries[c];
         obj.year = m;
-        for (var v = 0; v < dataS.Variables.length; v++) {
+        obj.metrics = dataS.nodes_info[key];
+        var index =0;
+        for (var key2 in obj.metrics) {
+            obj["s" + index] = obj.metrics[key2][m];
+            obj["v" + index] = obj.metrics[key2][m];
+            index++;
+        }
+        /*for (var v = 0; v < dataS.Variables.length; v++) {
             obj["s" + v] = dataS.YearsData[m]["s" + v][c];
             obj["v" + v] = dataS.CountriesData[obj.country][m]["v" + v];
             if (v % 2 == 1) {
@@ -70,12 +78,13 @@ function updateSubLayout(m) {
                     obj["ScagnosticsLeave1out" + pair].push(dataS.CountriesData[obj.country][m][dataS.Scagnostics[s]]);
                 }
             }
-        }
+        }*/
+
         dataPoints.push(obj);
     }
 
     //Filter out data points with "NaN"
-    dataPoints = dataPoints.filter(d => d["v0"] !== "NaN" && d["v1"] !== "NaN" && d["s0"] !== "NaN" && d["s1"] !== "NaN" && (!isNaN(d["ScagnosticsLeave1out0"][0] - d["Scagnostics0"][0])));
+   // dataPoints = dataPoints.filter(d => d["v0"] !== "NaN" && d["v1"] !== "NaN" && d["s0"] !== "NaN" && d["s1"] !== "NaN" && (!isNaN(d["ScagnosticsLeave1out0"][0] - d["Scagnostics0"][0])));
 
     var scaleRadius = d3.scale.linear()
         .range([size / 35, size / 10])
@@ -91,38 +100,21 @@ function updateSubLayout(m) {
             if (d["v0"] === "NaN")
                 return 0;
             else
-                return margin + 1.5 + d["s" + selectedVar] * (size - 3);
-            // return margin + 1.5 + d["s" + selectedVar] * (size - 9) + 3; //TODO: This is for the teaser only (switch back the previous one for normal page)
+                return margin + 1.5 + (d["s" + selectedVar] /10000)* (size - 3);
         })
         .attr("cy", function (d, i) {
             if (d["v1"] === "NaN")
                 return 0;
             else
-                return margin + size - 1.5 - d["s" + (selectedVar + 1)] * (size - 3);
-            // return margin + size - 1.5 - d["s" + (selectedVar + 1)] * (size - 9) - 3;//TODO: This is for the teaser only (switch back the previous one for normal page)
+                return margin + size - 1.5 - (d["s" + (selectedVar + 1)]/10000) * (size - 3);
         })
         .attr("r", function (d) {
-            var difAbs = Math.abs(d["ScagnosticsLeave1out0"][0] - d["Scagnostics0"][0]);
-            if (isNaN(difAbs)) {
-            debugger
-            }
-            return scaleRadius(difAbs);
+            return 3;
         })
         .style("stroke", "#fff")
         .style("stroke-width", 0.02)
         .style("stroke-opacity", 0.8)
         .style("fill", function (d) {
-            if (d["ScagnosticsLeave1out0"][0] > d["Scagnostics0"][0]) {
-                if (d["ScagnosticsLeave1out0"][0] - d["Scagnostics0"][0] < outlyingCut)
-                    return "#000";
-                else
-                    return colorAbove;
-            } else if (d["ScagnosticsLeave1out0"][0] < d["Scagnostics0"][0]) {
-                if (d["Scagnostics0"][0] - d["ScagnosticsLeave1out0"][0] < outlyingCut)
-                    return "#000";
-                else
-                    return colorBelow;
-            } else
                 return "#000";
         })
         .style("fill-opacity", pointOpacity)

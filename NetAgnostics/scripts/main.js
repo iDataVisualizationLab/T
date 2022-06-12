@@ -202,6 +202,9 @@ function loadData() {
                 .attr("width", width)
                 .attr("height", heightSVG);
 
+            numMonth = dataS.time_stamp.length;
+            XGAP_ = (width - xStep - 2) / numMonth; // gap between months on xAxis
+
             drawColorLegend();
             drawTimeGrid();
             drawTimeText();
@@ -212,7 +215,6 @@ function loadData() {
 
 
             // 2017, this function is main2.js
-            numMonth = dataS.time_stamp.length;
             computeMonthlyGraphs();
         }
 
