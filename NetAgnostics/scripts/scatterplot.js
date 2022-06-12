@@ -47,14 +47,15 @@ function updateSubLayout(m) {
         .attr("width", size - padding)
         .attr("height", size - padding)
         .style("fill", function (d) {
-            return colorRedBlue(dataS.YearsData[m].Scagnostics0[0]);
+            return "#f00";
+            //return colorRedBlue(dataS.YearsData[m].Scagnostics0[0]);
         })
         //.style("fill-opacity",0.9)
         .style("stroke", "#000")
         .style("stroke-width", 0.1);
 
     var dataPoints = [];
-    for (var c = 0; c < dataS.Countries.length; c++) {
+    for (var c = 0; c < numMonth; c++) {
         var obj = {};
         obj.country = dataS.Countries[c];
         obj.year = m;

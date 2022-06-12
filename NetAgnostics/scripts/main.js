@@ -96,7 +96,6 @@ var fileAbbreviations = [
     'USENC',
     'Donotuse',
     'HPCC'
-
 ]
 
 var processedData = {
@@ -130,15 +129,15 @@ var timeSteps = {
     "HPCC_04Oct": {minTime: 0, maxTime: 32, type: "quarter"},
 };
 // var fileName = fileList[fileList.length-1];
-var fileName = fileList[2];
+var fileName = fileList[0];
 
 // START: loader spinner settings ****************************
 var opts = {
     lines: 25, // The number of lines to draw
-    length: 15, // The length of each line
+    length: 25, // The length of each line
     width: 5, // The line thickness
-    radius: 25, // The radius of the inner circle
-    color: '#000', // #rgb or #rrggbb or array of colors
+    radius: 20, // The radius of the inner circle
+    color: '#a90', // #rgb or #rrggbb or array of colors
     speed: 2, // Rounds per second
     trail: 50, // Afterglow percentage
     className: 'spinner', // The CSS class to assign to the spinner
@@ -155,55 +154,12 @@ var dataS;
 
 
 function loadData() {
-    d3.json("data/" + fileName + ".json", function (data_) {
+   // d3.json("data/" + fileName + ".json", function (data_) {
+    d3.json("data2/nocona_24h.json", function (data_) {
         spinner.spin(target);
         //<editor-fold desc="This section filters out some data => for the purpose of the explanation of the process of building this software">
         //Filter out years before 1990 if it is HIV
-        if (fileName.indexOf("PrevalenceOfHIV") >= 0) {
-            data_["YearsData"] = data_["YearsData"].slice(30, data_["YearsData"].length);
 
-            data_["Countries"].forEach(country => {
-                let cd = data_["CountriesData"][country];
-                data_["CountriesData"][country] = cd.slice(30, cd.length).map(d => {
-                    d.year = d.year - 30;
-                    return d;
-                });
-            });
-        }
-        // // //Filter out years before minTime if it is USEmpRGoodVsService
-        // if(fileName.indexOf("USEmpRGoodVsService")>=0){
-        //     data_["YearsData"] = data_["YearsData"].slice(timeSteps[fileName].minTime, data_["YearsData"].length);
-        //
-        //     data_["Countries"].forEach(country=>{
-        //         let cd = data_["CountriesData"][country];
-        //         data_["CountriesData"][country] = cd.slice(timeSteps[fileName].minTime, cd.length).map(d=>{
-        //             d.year=d.year-timeSteps[fileName].minTime;
-        //             return d;
-        //         });
-        //     });
-        // }
-        // //TODO: 10 here coz we know explicitly that we would cut 10 years at first and 13 at last
-        // if(fileName.indexOf("LifeExpectancy263")>=0){
-        //     data_["YearsData"] = data_["YearsData"].slice(10, data_["YearsData"].length-13);
-        //     data_["Countries"].forEach(country=>{
-        //         let cd = data_["CountriesData"][country];
-        //         data_["CountriesData"][country] = cd.slice(10, cd.length-13).map(d=>{
-        //             d.year=d.year-10;
-        //             return d;
-        //         });
-        //     });
-        // }
-        //TODO: we know explicitly that we would cut 5 years at first and 30 at last
-        if (fileName.indexOf("UnemploymentRate") >= 0) {
-            data_["YearsData"] = data_["YearsData"].slice(5, data_["YearsData"].length - 30);
-            data_["Countries"].forEach(country => {
-                let cd = data_["CountriesData"][country];
-                data_["CountriesData"][country] = cd.slice(5, cd.length - 30).map(d => {
-                    d.year = d.year - 5;
-                    return d;
-                });
-            });
-        }
         //</editor-fold>
 
         //<editor-fold desc: Vung's code to reprocess the outliag data>
@@ -218,7 +174,7 @@ function loadData() {
         // drawData(dataS);
 
         //Parallel version
-        if (processedData[fileName] == null) {
+       /* if (processedData[fileName] == null) {
             dataS = data_;
             let op = new OutliagProcessor(dataS);
 
@@ -232,8 +188,35 @@ function loadData() {
         } else {
             dataS = processedData[fileName];
             drawData(dataS);
+        }*/
+
+        drawData2 (data_)    ;
+
+        function drawData2(data_) {
+            dataS= data_;
+            svg.append("rect")
+                .attr("class", "background")
+                .style("fill", "#eee")
+                .attr("x", 0)
+                .attr("y", yTimeBox)
+                .attr("width", width)
+                .attr("height", heightSVG);
+
+            drawColorLegend();
+            drawTimeGrid();
+            drawTimeText();
+            drawTimeBox(); // This box is for brushing
+
+            // Spinner Stop ********************************************************************
+            spinner.stop();
+
+
+            // 2017, this function is main2.js
+            numMonth = dataS.time_stamp.length;
+            computeMonthlyGraphs();
         }
-        //</editor-fold>
+
+            //</editor-fold>
 
         function drawData(dataS) {
             searchTerm = "";
