@@ -1,4 +1,4 @@
-/* November 2017 
+/* November 2022
  * Tommy Dang, Assistant professor, iDVL@TTU
  *
  * THIS SOFTWARE IS BEING PROVIDED "AS IS", WITHOUT ANY EXPRESS OR IMPLIED
@@ -10,6 +10,11 @@ var margin = {top: 0, right: 0, bottom: 0, left: 0};
 var width = document.body.clientWidth - margin.left - margin.right;
 var height = 50 - margin.top - margin.bottom;
 var heightSVG = 2500;
+
+///*********** 2022 *******************
+var metaData = new Object();
+var computes = [];
+
 
 //Append a SVG to the body of the html page. Assign this SVG as an object to svg
 var svg = d3.select("body").append("svg")
@@ -157,6 +162,9 @@ function loadData() {
    // d3.json("data/" + fileName + ".json", function (data_) {
     d3.json("data2/nocona_24h.json", function (data_) {
         spinner.spin(target);
+
+
+
         //<editor-fold desc="This section filters out some data => for the purpose of the explanation of the process of building this software">
         //Filter out years before 1990 if it is HIV
 
@@ -190,13 +198,69 @@ function loadData() {
             drawData(dataS);
         }*/
 
-        drawData2 (data_)    ;
+
+        dataS= data_;
+
+        // Process HPCC data ---- 2022
+
+        // Obtain the list of varriable to metaData
+        metaData.listOfVariables = [];
+        var count=0;
+        for (var key in dataS.nodes_info){
+            if (count==0){
+                for (var varName in dataS.nodes_info[key]) {
+                    metaData.listOfVariables.push(varName);
+                }
+            }
+            count++;
+        }
+
+        // Obtain the list of computeNames to metaData and create the list of computes with metrics arrays
+        metaData.listOfNames = [];
+        for (var key in dataS.nodes_info){
+            var obj = {};
+            obj.name = key;
+            metaData.listOfNames.push(obj.name);
+            obj.metrics = dataS.nodes_info[key];
+            for(var v=0; v<metaData.listOfVariables.length;v++){
+                var vName = metaData.listOfVariables[v];
+                obj[vName] = obj.metrics[vName];
+            }
+            computes.push(obj);
+        }
+
+        // Compute the min and max of each variable for the whole HPC cente
+        metaData.listOfMins = [];
+        metaData.listOfMaxs = [];
+        for(var v=0; v<metaData.listOfVariables.length;v++){
+            var varName = metaData.listOfVariables[v];
+            var max =0;
+            var min =100000000;
+            for (var i=0; i<computes.length;i++){
+                if (computes[i][varName]!=undefined){
+                    var newMax = Math.max(...computes[i][varName]);
+                    var newMin = Math.min(...computes[i][varName]);
+                    if (max<newMax)
+                        max = newMax;
+                    if (min>newMin)
+                        min = newMin;
+                }
+            }
+            metaData.listOfMins.push(min);
+            metaData.listOfMaxs.push(max);
+        }
+
+
+
+
+
+
+        drawData2(data_)    ;
 
         function drawData2(data_) {
-            dataS= data_;
             svg.append("rect")
                 .attr("class", "background")
-                .style("fill", "#eee")
+                .style("fill", "#fee")
                 .attr("x", 0)
                 .attr("y", yTimeBox)
                 .attr("width", width)
@@ -218,7 +282,8 @@ function loadData() {
             computeMonthlyGraphs();
         }
 
-            //</editor-fold>
+
+
 
         function drawData(dataS) {
             searchTerm = "";
@@ -229,11 +294,6 @@ function loadData() {
 
             minYear = timeSteps[fileName].minTime;
             maxYear = timeSteps[fileName].maxTime;
-
-            //minYear =1990; // Huffington
-            //maxYear =2048;
-            //minYear =1990; // VIS
-            //maxYear =2016;
 
             numMonth = maxYear - minYear + 1;
             XGAP_ = (width - xStep - 2) / numMonth; // gap between months on xAxis

@@ -16,7 +16,7 @@ var selectedScag = 0;
 function updateSubLayout(m) {
     svg.selectAll(".force" + m).remove();
 
-    var xPos = xStep - forceSize / 2 + m * XGAP_;
+    var xPos = xStep - forceSize / 2 + m * XGAP_*10;
 
     var svg2 = svg.append("svg")
         .attr("class", "force" + m)
@@ -49,7 +49,7 @@ function updateSubLayout(m) {
         .attr("width", size - padding)
         .attr("height", size - padding)
         .style("fill", function (d) {
-            return "#f00";
+            return "#faa";
             //return colorRedBlue(dataS.YearsData[m].Scagnostics0[0]);
         })
         //.style("fill-opacity",0.9)
@@ -91,25 +91,35 @@ function updateSubLayout(m) {
         .domain([0, 1]);
 
     svg2.selectAll("circle")
-        .data(dataPoints)
+        .data(computes)
         .enter().append("circle")
         .attr("class", function (d, i) {
             return "dataPoint" + i;
         })
         .attr("cx", function (d) {
-            if (d["v0"] === "NaN")
-                return 0;
-            else
-                return margin + 1.5 + (d["s" + selectedVar] /10000)* (size - 3);
+            var vName = metaData.listOfVariables[8];
+            if (d[vName]!=undefined){
+                var value = d[vName][m] /metaData.listOfMaxs[8];
+                if (isNaN(value))
+                    return 0;
+                else{
+                    return margin + 1.5 + value* (size - 3);
+                }
+            }
         })
         .attr("cy", function (d, i) {
-            if (d["v1"] === "NaN")
-                return 0;
-            else
-                return margin + size - 1.5 - (d["s" + (selectedVar + 1)]/10000) * (size - 3);
+            var vName = metaData.listOfVariables[12];
+            if (d[vName]!=undefined) {
+                var value = d[vName][m] / 100;
+                if (isNaN(value))
+                    return 0;
+                else {
+                    return margin + size - 1.5 - value * (size - 3);
+                }
+            }
         })
         .attr("r", function (d) {
-            return 3;
+            return 2;
         })
         .style("stroke", "#fff")
         .style("stroke-width", 0.02)

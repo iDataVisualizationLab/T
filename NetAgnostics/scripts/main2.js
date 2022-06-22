@@ -39,7 +39,6 @@ function computeMonthlyGraphs() {
 
     for (var m = 0; m < numMonth; m++) {
         // Draw network snapshot
-        console.log(numMonth+"  " +m);
         updateSubLayout(m);
     }
     updateTimeLegend();
