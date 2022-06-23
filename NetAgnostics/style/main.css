@@ -64,7 +64,7 @@
     position:absolute;
     border-radius: 0px;
     z-index: 1110;
-    top: 2px;
+    top: 72px;
     left: 3px;
     width: 200px;
     height: 60px;
@@ -121,18 +121,12 @@ input.search {
 .styled-select {
   overflow: hidden;
   height: 32px;
-  width: 200px;
+  width: 120px;
   margin-right: 10px;
-  background: #eee;
+  background: #fff;
 }
 
-.styled-select2 {
-  overflow: hidden;
-  height: 20px;
-  width: 200px;
-  margin-right: 10px;
-  background: #eee;
-}
+
 
 
 /* tooltip */

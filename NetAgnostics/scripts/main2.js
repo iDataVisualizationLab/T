@@ -80,36 +80,7 @@ var areaAbove = d3.svg.area()
                 return d.y - yScaleS(scagLeaveOriginal);
         }
     });
-//TODO: These are for the papers display only.
-// var outlyingBaseLine = d3.svg.line()
-//     .interpolate(interpolation)
-//     .x(function (d, i) {
-//         if (i == 0)
-//             return xStep - 10;
-//         else
-//             return xStep + xScale(i - 1);
-//     })
-//     .y(function (d, i) {
-//         if (i == 0 || i == dataS.YearsData.length + 1)
-//             return d.y;
-//         else {
-//             return d.y - yScaleS(dataS.YearsData[i - 1].Scagnostics0[selectedScag]);
-//         }
-//     });
-// var countryBaseLine = d3.svg.line()
-//     .x(function (d, i) {
-//         if (i == 0)
-//             return xStep - 10;
-//         else
-//             return xStep + xScale(i - 1);
-//     })
-//     .y(function (d, i) {
-//         if (i == 0 || i == dataS.YearsData.length + 1)
-//             return d.y;
-//         else {
-//             return d.y;
-//         }
-//     });
+
 var areaBelow = d3.svg.area()
     .interpolate(interpolation)
     .x(function (d, i) {

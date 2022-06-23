@@ -12,8 +12,11 @@ var height = 50 - margin.top - margin.bottom;
 var heightSVG = 2500;
 
 ///*********** 2022 *******************
+var dataS;
 var metaData = new Object();
 var computes = [];
+var var1 = 8;  // 8=PowerMetrics
+var var2 = 12; // 12=memoryusage
 
 
 //Append a SVG to the body of the html page. Assign this SVG as an object to svg
@@ -79,7 +82,7 @@ var getColor3;  // Colors of categories
 
 //*****************************************************************
 var fileList = [
-    "UnemploymentRate",
+    "HPCC",
     "LifeExpectancy263",
     "PrevalenceOfHIV",
     "NYSEPriceVsVolume",
@@ -152,57 +155,18 @@ var spinner = new Spinner(opts).spin(target);
 // END: loader spinner settings ****************************
 
 
-addDatasetsOptions(); // Add these dataset to the select dropdown, at the end of this files
+//addDatasetsOptions(); // Add these dataset to the select dropdown, at the end of this files
+
+loadData();
 drawControlPanel();
-
-var dataS;
-
 
 function loadData() {
    // d3.json("data/" + fileName + ".json", function (data_) {
     d3.json("data2/nocona_24h.json", function (data_) {
         spinner.spin(target);
-
-
-
-        //<editor-fold desc="This section filters out some data => for the purpose of the explanation of the process of building this software">
-        //Filter out years before 1990 if it is HIV
-
-        //</editor-fold>
-
-        //<editor-fold desc: Vung's code to reprocess the outliag data>
-        // //Synchronous version
-        // if (processedData[fileName] == null) {
-        //     dataS = data_;
-        //     let op = new OutliagProcessor(dataS);
-        //     op.processOutliagData();
-        //     processedData[fileName] = op.dataS;
-        // }
-        // dataS = processedData[fileName];
-        // drawData(dataS);
-
-        //Parallel version
-       /* if (processedData[fileName] == null) {
-            dataS = data_;
-            let op = new OutliagProcessor(dataS);
-
-            op.processOutliagData(onCompleted);
-
-            function onCompleted() {
-                dataS = op.dataS;
-                processedData[fileName] = dataS;
-                drawData(dataS)
-            }
-        } else {
-            dataS = processedData[fileName];
-            drawData(dataS);
-        }*/
-
-
         dataS= data_;
 
         // Process HPCC data ---- 2022
-
         // Obtain the list of varriable to metaData
         metaData.listOfVariables = [];
         var count=0;
@@ -260,7 +224,7 @@ function loadData() {
         function drawData2(data_) {
             svg.append("rect")
                 .attr("class", "background")
-                .style("fill", "#fee")
+                .style("fill", "#e8e8e8")
                 .attr("x", 0)
                 .attr("y", yTimeBox)
                 .attr("width", width)
@@ -401,18 +365,17 @@ function searchNode() {
 }
 
 function addDatasetsOptions() {
-    var select = document.getElementById("datasetsSelect");
-    for (var i = 0; i < fileList.length; i++) {
+    //var select = document.getElementById("datasetsSelect");
+    /*for (var i = 0; i < fileList.length; i++) {
         var opt = fileList[i];
         var el = document.createElement("option");
         el.textContent = opt;
         el.value = opt;
         //el["data-image"]="images2/datasetThumnails/"+fileList[i]+".png";
         select.appendChild(el);
-    }
-    document.getElementById('datasetsSelect').value = fileName;  //************************************************
-    fileName = document.getElementById("datasetsSelect").value;
-    loadData();
+    }*/
+    //document.getElementById('datasetsSelect').value = fileName;  //************************************************
+   // fileName = document.getElementById("datasetsSelect").value;
 }
 
 function loadNewData(event) {

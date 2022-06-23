@@ -274,14 +274,14 @@
         let cd = dataPoints;
         //convert to points
         let y = [];
-        d3.keys(cd).forEach(key => {
+   /***     d3.keys(cd).forEach(key => {
             let point = [cd[key]["v0"], cd[key]["v1"]];
             if (!point.data) {
                 point.data = {};
             }
             point.data.text = cd[key]["country"];
             y.push(point);
-        });
+        });***/
         return y;
     }
 
@@ -297,10 +297,10 @@
         }
         p.data.originalPoint = [p[0], p[1]];
     });
-    let scag = scagnostics(points, binType, startBinGridSize);
+   // let scag = scagnostics(points, binType, startBinGridSize);
     //process outliag score
-    outliagProcessor = new SingleOutliagProcessor(scag.normalizedPoints);
-    outliagProcessor.processOutliagData();
+   // outliagProcessor = new SingleOutliagProcessor(scag.normalizedPoints);
+   // outliagProcessor.processOutliagData();
     //Draw axis
 
 
@@ -314,8 +314,8 @@
     drawContentBound(scagsvg);
     drawContentBound(leaveoutsvg);
 
-    drawNormalizedData(scag);
-    draw(scag);
+    //drawNormalizedData(scag);
+    //draw(scag);
 
 
     function drawNormalizedDataSvg(scag, theSvg) {
@@ -561,9 +561,7 @@
         origPoints = drawNormalizedDataSvg(scag, scagsvg);
         toggleDisplay(origPoints);//Disable it
         drawScores(g, scag);
-        var color = d3.scale.linear().range(["#EEEEEE", "#000"])
-            .interpolate(d3.interpolateHcl)
-            .domain(d3.extent(scag.bins.map(b => b.length)));
+        var color = d3.scale.linear().range(["#EEEEEE", "#000"]);
 
         if (binType === "hexagon") {
             bins = g.append("g")
@@ -792,8 +790,8 @@
     }
 
     function drawAxis(svg, variables) {
-        let v1 = variables[0];
-        let v2 = variables[1];
+        let v1 = "variables[0]";
+        let v2 = "variables[1]";
         let x1 = +svg.attr("width") / 2;
         let y1 = +svg.attr("height") - margins.bottom / 2;
         let x2 = margins.left / 2;

@@ -217,34 +217,15 @@ var listX;
 
 function drawTimeGrid() {
     listX = [];
-    if (fileName.indexOf("Political") >= 0) {
-        for (var i = minYear; i <= maxYear; i++) {
-            for (var j = 0; j < 12; j++) {
-                var xx = xStep + xScale((i - minYear) * 12 + j);
-                var obj = {};
-                obj.x = xx;
-                obj.year = i;
-                listX.push(obj);
-            }
-        }
+
+    for (var i = 0; i <= numMonth; i++) {
+        var xx = xStep + xScale(i);
+        var obj = {};
+        obj.x = xx;
+        obj.year = i;
+        listX.push(obj);
     }
-    if (fileName.indexOf("prices") >= 0) {
-        for (var i = minYear; i <= maxYear; i++) {
-            var xx = xStep + xScale(i - minYear);
-            var obj = {};
-            obj.x = xx;
-            obj.year = i - minYear;
-            listX.push(obj);
-        }
-    } else {
-        for (var i = minYear; i <= maxYear; i++) {
-            var xx = xStep + xScale(i - minYear);
-            var obj = {};
-            obj.x = xx;
-            obj.year = i;
-            listX.push(obj);
-        }
-    }
+
     svg.selectAll(".timeLegendLine").data(listX)
         .enter().append("line")
         .attr("class", "timeLegendLine")
@@ -278,64 +259,27 @@ function drawTimeText() {
         .attr("font-family", "sans-serif")
         .attr("font-size", "15px")
         .text(function (d, i) {
-            if (fileName.indexOf("Political") >= 0) {
-                if (i % 12 == 0)
-                    return d.year;
-                else
-                    return months[i % 12];
-            } else {
-                return d.year;
-            }
+            return d.year;
         });
 }
 
 function updateTimeLegend() {
     var listX = [];
-    if (fileName.indexOf("Political") >= 0) {
-        for (var i = minYear; i <= maxYear; i++) {
-            for (var j = 0; j < 12; j++) {
-                var xx = xStep + xScale((i - minYear) * 12 + j);
-                var obj = {};
-                obj.x = xx;
-                obj.year = i;
-                listX.push(obj);
-            }
-        }
-    } else {
-        for (var i = minYear; i <= maxYear; i++) {
-            var xx = xStep + xScale(i - minYear);
-            var obj = {};
-            obj.x = xx;
-            obj.year = i;
-            listX.push(obj);
-        }
+
+    for (var i = 0; i <= numMonth; i++) {
+        var xx = xStep + xScale(i);
+        var obj = {};
+        obj.x = xx;
+        obj.year = i;
+        listX.push(obj);
     }
 
+
     svg.selectAll(".timeLegendLine").data(listX).transition().duration(transitionTime)
-        .style("stroke-dasharray", function (d, i) {
-            if (fileName.indexOf("Political") >= 0) {
-                if (!isLensing)
-                    return "1, 2";
-                else
-                    return i % 12 == 0 ? "3, 1" : "1, 3"
-            } else {
+        .style("stroke-dasharray", function (d, i){
                 return i % 5 == 0 ? "3, 1" : "1, 3"
-            }
         })
-        .style("stroke-opacity", function (d, i) {
-            if (fileName.indexOf("Political") >= 0) {
-                if (i % 12 == 0)
-                    return 1;
-                else {
-                    if (isLensing && lMonth - numLens <= i && i <= lMonth + numLens)
-                        return 1;
-                    else
-                        return 0;
-                }
-            } else {
-                return 1;
-            }
-        })
+        .style("stroke-opacity",1)
         .attr("x1", function (d) {
             return d.x;
         })
@@ -352,9 +296,8 @@ function updateTimeLegend() {
 
     // ************************************SCALE force layouts ************************************
     // snapshotScale = 0.10;
-    for (var i = minYear; i <= maxYear; i++) {
-        for (var j = 0; j < 12; j++) {
-            var m = (i - minYear) * 12 + j;
+    for (var i = 0; i <= numMonth; i++) {
+           var m = i;
             var view = "0 0 " + forceSize + " " + forceSize;
             if (lMonth - numLens <= m && m <= lMonth + numLens)
                 view = (forceSize * (1 - snapshotScale) / 2) + " " + (forceSize * (1 - snapshotScale) / 2) + " " + (forceSize * snapshotScale) + " " + (forceSize * snapshotScale);
@@ -370,8 +313,9 @@ function updateTimeLegend() {
             svg.selectAll(".force" + m).transition().duration(transitionTime)
                 .attr("x", xStep - forceSize / 2 + xScale(m))
                 .attr("viewBox", view);
-        }
+
     }
+
 }
 
 // Used in util.js and main.js *****************
@@ -416,7 +360,7 @@ function drawTimeBox() {
             isLensing = true;
             coordinate = d3.mouse(this);
             lMonth = Math.floor((coordinate[0] - xStep) / XGAP_);
-
+            console.log(" lMonth="+lMonth);
             // Update layout
             updateTimeLegend();
             updateTimeBox();
@@ -426,11 +370,7 @@ function drawTimeBox() {
 function updateTimeBox() {
     svg.selectAll(".timeLegendText")
         .attr("y", function (d, i) {
-            if (fileName.indexOf("Political") >= 0) {
-                return (i % 12 == 0) ? yTimeBox + 12 : yTimeBox + 22;
-            } else {
-                return yTimeBox + 18;
-            }
+            return yTimeBox + 18;
         })
         .attr("x", function (d, i) {
             return d.x;

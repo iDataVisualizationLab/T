@@ -6,7 +6,7 @@
  * OF THIS SOFTWARE OR ITS FITNESS FOR ANY PARTICULAR PURPOSE.
  */
 
-var forceSize = 90; // Max size of force layouts at the bottom
+var forceSize = 60; // Max size of force layouts at the bottom
 
 var allSVG = [];
 var pointOpacity = 0.9;
@@ -97,9 +97,9 @@ function updateSubLayout(m) {
             return "dataPoint" + i;
         })
         .attr("cx", function (d) {
-            var vName = metaData.listOfVariables[8];
+            var vName = metaData.listOfVariables[var1];
             if (d[vName]!=undefined){
-                var value = d[vName][m] /metaData.listOfMaxs[8];
+                var value = d[vName][m] /metaData.listOfMaxs[var1];
                 if (isNaN(value))
                     return 0;
                 else{
@@ -108,9 +108,9 @@ function updateSubLayout(m) {
             }
         })
         .attr("cy", function (d, i) {
-            var vName = metaData.listOfVariables[12];
+            var vName = metaData.listOfVariables[var2];
             if (d[vName]!=undefined) {
-                var value = d[vName][m] / 100;
+                var value = d[vName][m] / metaData.listOfMaxs[var2];
                 if (isNaN(value))
                     return 0;
                 else {
