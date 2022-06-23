@@ -5,10 +5,10 @@ var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oc
 // Add color legend
 var yTimeBox = 0;
 
-var colorArray = ["#9dbee6", "#afcae6", "#c8dce6", "#e6e6e6", "#e6e6d8", "#e6d49c", "#e6b061", "#e6852f", "#e6531a", "#e61e1a"];
+var colorArray = ["#9dbee6", "#afcae6", "#c8dce6", "#e6e6d8", "#e6d49c", "#e6852f", "#e61e1a"];
 
 var colorRedBlue = d3.scale.linear()
-    .domain([0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1])
+    .domain([0,0.2, 0.4, 0.6, 0.8, 0.9, 1])
     .range(colorArray);
 
 // These texts are different upon input dataset   
@@ -20,16 +20,7 @@ function drawColorLegend() {
     var xx = 11;
     var yy = 58;
     var rr = 5;
-    // number of input terms
-    if (fileName.indexOf("VIS") >= 0) {
-        text1 = "authors";
-        text2 = "papers";
-        textFile = "VIS publications";
-    } else {
-        text1 = "terms";
-        text2 = "blogs";
-        textFile = fileName;
-    }
+
 
     // Scagnostics color legend ****************
     //Append a defs (for definition) element to your SVG
@@ -43,15 +34,28 @@ function drawColorLegend() {
         .attr("y1", "0%")
         .attr("x2", "100%")
         .attr("y2", "0%");
+
+
+
+    var yScagLegend = 36;
+    var wScagLegend = 160;
+    var measureName = metaData.listOfVariables[var1]+"_Net";
+    var netMin = metaData.listOfMins_Net[var1];
+    var netMax = metaData.listOfMaxs_Net[var1];
+
+
+    colorRedBlue = d3.scale.linear()
+        .domain([netMin,netMin/2, netMin/4, 0, netMax/4, netMax/2, netMax])
+        .range(colorArray);
+
     for (var i = 0; i < colorArray.length; i++) {
-        var percent = i * 10;
+        var percent = i * 16;
         linearGradient.append("stop")
             .attr("offset", percent + "%")
-            .attr("stop-color", colorArray[i]); //dark blue  
+            .attr("stop-color", colorArray[i]); //dark blue
     }
 
-    var yScagLegend = 56;
-    var wScagLegend = 160;
+
     //Draw the rectangle and fill with gradient
     svg.append("rect")
         .attr("x", 11)
@@ -68,7 +72,7 @@ function drawColorLegend() {
         .style("text-anchor", "middle")
         .style("font-weight", "bold")
         .style("fill", "#000")
-        .text("Outlying measure");
+        .text(measureName);
     svg.append("text")
         .attr("x", 2)
         .attr("y", yScagLegend + 19)
@@ -77,7 +81,7 @@ function drawColorLegend() {
         .style("text-anchor", "left")
         .style("font-weight", "bold")
         .style("fill", "#000")
-        .text("0");
+        .text(netMin);
     svg.append("text")
         .attr("x", wScagLegend + 12)
         .attr("y", yScagLegend + 19)
@@ -86,7 +90,7 @@ function drawColorLegend() {
         .style("text-anchor", "left")
         .style("font-weight", "bold")
         .style("fill", "#000")
-        .text("1");
+        .text(netMax);
 
     // Draw color legend **************************************************
     var yScagLegend2 = 132;

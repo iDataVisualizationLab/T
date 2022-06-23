@@ -48,8 +48,24 @@ function updateSubLayout(m) {
         .attr("width", size - padding)
         .attr("height", size - padding)
         .style("fill", function (d) {
-            return "#faa";
-            //return colorRedBlue(dataS.YearsData[m].Scagnostics0[0]);
+            var measureName = metaData.listOfVariables[var1]+"_Net";
+            var maxNetAtTimeStamp = 0;
+            var minNetAtTimeStamp = 0;
+            for (var c=0; c<computes.length;c++){
+                if (computes[c][measureName]!= undefined){
+                    if (maxNetAtTimeStamp<computes[c][measureName][m])
+                        maxNetAtTimeStamp = computes[c][measureName][m]
+                    if (minNetAtTimeStamp>computes[c][measureName][m])
+                        minNetAtTimeStamp = computes[c][measureName][m]
+                }
+
+            }
+            var maxNet = maxNetAtTimeStamp;
+            var absMinNet = Math.abs(minNetAtTimeStamp);
+            if (absMinNet>maxNet)
+                maxNet = minNetAtTimeStamp;
+
+            return colorRedBlue(maxNet);
         })
         //.style("fill-opacity",0.9)
         .style("stroke", "#000")
@@ -123,7 +139,7 @@ function updateSubLayout(m) {
             if (d[vName1]==undefined || d[vName2]==undefined)
                return 0;
             else
-                return 1;
+                return 0.8;
         })
         .style("stroke", "#fff")
         .style("stroke-width", 0.02)
