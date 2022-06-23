@@ -186,9 +186,23 @@ function loadData() {
             obj.name = key;
             metaData.listOfNames.push(obj.name);
             obj.metrics = dataS.nodes_info[key];
+            // Copy the metrics into  computes
             for(var v=0; v<metaData.listOfVariables.length;v++){
                 var vName = metaData.listOfVariables[v];
                 obj[vName] = obj.metrics[vName];
+            }
+            // Copy the Net metrics into  computes
+            for(var v=0; v<metaData.listOfVariables.length;v++){
+                var vName = metaData.listOfVariables[v];
+                if (obj.metrics[vName] !=undefined){
+                    obj[vName+"_Net"] = new Array(obj.metrics[vName].length);
+                    for (var i=0;i<obj.metrics[vName].length;i++){
+                        if (i==0)
+                            obj[vName+"_Net"][i] =0
+                        else
+                            obj[vName+"_Net"][i] = obj[vName][i] -obj[vName][i-1];
+                    }
+                }
             }
             computes.push(obj);
         }
@@ -212,6 +226,26 @@ function loadData() {
             }
             metaData.listOfMins.push(min);
             metaData.listOfMaxs.push(max);
+        }
+        // Compute the min and max of NET variables
+        metaData.listOfMins_Net = [];
+        metaData.listOfMaxs_Net = [];
+        for(var v=0; v<metaData.listOfVariables.length;v++){
+            var varName = metaData.listOfVariables[v]+"_Net";
+            var max =0;
+            var min =100000000;
+            for (var i=0; i<computes.length;i++){
+                if (computes[i][varName]!=undefined){
+                    var newMax = Math.max(...computes[i][varName]);
+                    var newMin = Math.min(...computes[i][varName]);
+                    if (max<newMax)
+                        max = newMax;
+                    if (min>newMin)
+                        min = newMin;
+                }
+            }
+            metaData.listOfMins_Net.push(min);
+            metaData.listOfMaxs_Net.push(max);
         }
 
 
