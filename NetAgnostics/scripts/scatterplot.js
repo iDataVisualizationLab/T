@@ -82,19 +82,6 @@ function updateSubLayout(m) {
             obj["v" + index] = obj.metrics[key2][m];
             index++;
         }
-        /*for (var v = 0; v < dataS.Variables.length; v++) {
-            obj["s" + v] = dataS.YearsData[m]["s" + v][c];
-            obj["v" + v] = dataS.CountriesData[obj.country][m]["v" + v];
-            if (v % 2 == 1) {
-                var pair = Math.floor(v / 2);
-                obj["Scagnostics" + pair] = dataS.YearsData[m]["Scagnostics" + pair]; // 0 is the index of Outlying
-                obj["ScagnosticsLeave1out" + pair] = []; // 0 is the index of Outlying
-                for (var s = 0; s < dataS.Scagnostics.length; s++) {
-                    obj["ScagnosticsLeave1out" + pair].push(dataS.CountriesData[obj.country][m][dataS.Scagnostics[s]]);
-                }
-            }
-        }*/
-
         dataPoints.push(obj);
     }
 

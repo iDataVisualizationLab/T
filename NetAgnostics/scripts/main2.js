@@ -44,7 +44,8 @@ function computeMonthlyGraphs() {
     updateTimeLegend();
     oldLmonth = -100;  // This to make sure the histogram and text list is updated
     updateTimeBox();
-//    drawgraph2();
+    drawgraph2();
+
 }
 
 
@@ -109,7 +110,6 @@ var areaBelow = d3.svg.area()
     });
 
 function drawgraph2() {
-
     //need to reset these values every time we calculate a new data set
     var maxDifAboveForAll = 0;
     var maxDifBelowForAll = 0;
@@ -123,6 +123,7 @@ function drawgraph2() {
     // yStart = height + 275 + 30; // y starts drawing the stream graphs, added 50 to bring these downs
 
     // Scagnostics stream graphs
+    /*
     countryList = [];
     for (var c = 0; c < dataS.Countries.length; c++) {
         var country = dataS.Countries[c];
@@ -180,7 +181,7 @@ function drawgraph2() {
 
     countryListFiltered.sort(function (a, b) {
         return a.maxDifBelow - b.maxDifBelow;
-    });
+    });*/
 
     //** TEXT CLOUD **********************************************************
     yTextClouds = height + boxHeight; // 75 is the height of the text cloud section.
@@ -188,7 +189,7 @@ function drawgraph2() {
     //** BOX PLOT **********************************************************
     drawBoxplot();   // in main3.js
     //** COUNTRY PROFILE **********************************************************
-    drawCountryProfiles();
+    //drawCountryProfiles();
 }
 
 function drawCountryProfiles() {
@@ -473,34 +474,23 @@ function updateTextClouds() {
         .attr("x", function (d, i) {
             return xStep + xScale(Math.floor(i / numTermsWordCloud));    // x position is at the arcs
         })
-        .attr("font-size", function (d, i) {
+        .style("font-size", function (d, i) {
             var y = Math.floor(i / numTermsWordCloud);
             if (lMonth - numLens <= y && y <= lMonth + numLens) {
                 var sizeScale = d3.scale.linear()
                     .range(lensedTextCloudRange)
                     .domain([0, maxAbs]);
-                if (Math.abs(d[y + 1].OutlyingDif) < outlyingCut)
-                    d.fontSize = 0;
-                else
-                    d.fontSize = sizeScale(Math.abs(d[y + 1].OutlyingDif));
+                return "12px";
             } else {
                 var sizeScale = d3.scale.linear()
                     .range(textCloudRange)
                     .domain([0, maxAbs]);
-                if (Math.abs(d[y + 1].OutlyingDif) < outlyingCut * 2)
-                    d.fontSize = 0;
-                else
-                    d.fontSize = sizeScale(Math.abs(d[y + 1].OutlyingDif));
+                return "4px";
             }
-            return d.fontSize;
+
         })
         .text(function (d, i) {
-            var y = Math.floor(i / numTermsWordCloud);
-            if (lMonth - numLens - 1 <= y && y <= lMonth + numLens + 1) {
-                return d[0].country.substring(0, lensedCloudTextLength);//+" ("+d.count+")";
-            } else {
-                return d[0].country.substring(0, cloudTextLength);
-            }
+            return d.name;
         });
 }
 

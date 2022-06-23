@@ -7,7 +7,7 @@
  */
 var interpolation = "cardinal";
 var numTermsWordCloud = 6; // numTerms in each month
-var boxplotHeight = 50; // numTerms in each month
+var boxplotHeight = 90; // numTerms in each month
 var hBoxplotScale = null;
 
 var areaTopAbove = d3.svg.area()
@@ -37,7 +37,7 @@ var boxplotNodes = [];
 
 function drawBoxplot() {
     boxplotNodes = [];
-    for (var y = 1; y <= dataS.YearsData.length; y++) {
+    for (var t = 0; t < numMonth; t++) {
         var nodes = [];
 
         var obj = {};
@@ -45,7 +45,24 @@ function drawBoxplot() {
         obj.sumBelow = 0;
         obj.countAbove = 0;
         obj.countBelow = 0;
-        for (var c = 0; c < countryList.length; c++) {
+
+
+        var measureName = metaData.listOfVariables[var1]+"_Net";
+        for (var c=0; c<computes.length;c++){
+            if (computes[c][measureName]!= undefined){
+                if (computes[c][measureName][t]>0){
+                    obj.sumAbove += computes[c][measureName][t];
+                    obj.countAbove++;
+                }
+                if (computes[c][measureName][t]<0){
+                    obj.sumBelow += computes[c][measureName][t];
+                    obj.countBelow++;
+                }
+            }
+
+        }
+
+        /*for (var c = 0; c < countryList.length; c++) {
             nodes.push(countryList[c]);
             if (countryList[c][y].OutlyingDif > 0) {
                 obj.sumAbove += countryList[c][y].OutlyingDif;
@@ -55,13 +72,24 @@ function drawBoxplot() {
                 obj.sumBelow += countryList[c][y].OutlyingDif;
                 obj.countBelow++;
             }
+        }*/
+
+        for (var c = 0; c < computes.length; c++) {
+            if (computes[c][measureName]!=undefined)
+                nodes.push(computes[c]);
         }
         nodes.sort(function (a, b) {
-            if (a[y].OutlyingDif < b[y].OutlyingDif)
-                return 1;
+            if (a[measureName]!=undefined && b[measureName]!=undefined){
+                if (a[measureName][t] < b[measureName][t])
+                    return 1;
+                else
+                    return -1;
+            }
             else
-                return -1;
+                return 0;
         });
+
+
         if (obj.countAbove > 0)
             obj.averageAbove = obj.sumAbove / obj.countAbove;
         else
@@ -71,12 +99,24 @@ function drawBoxplot() {
         else
             obj.averageBelow = 0;
 
-        obj.maxAbove = nodes[0][y].OutlyingDif;
-        obj.maxBelow = nodes[nodes.length - 1][y].OutlyingDif;
+        obj.maxAbove = nodes[0][measureName][t];
+        obj.maxBelow = nodes[nodes.length - 1][measureName][t];
         obj.maxAboveCountry = nodes[0];
         obj.maxBelowCountry = nodes[nodes.length - 1];
         boxplotNodes.push(obj);
+      //  debugger
+
     }
+
+    maxAbs = 0;
+    for (var i=0; i<boxplotNodes.length; i++){
+        if (maxAbs<boxplotNodes[i].maxAbove)
+            maxAbs =boxplotNodes[i].maxAbove;
+        if (maxAbs< Math.abs(boxplotNodes[i].maxBelow))
+            maxAbs =Math.abs(boxplotNodes[i].maxBelow);
+    }
+    //    Math.max (...boxplotNodes[1].maxAbove;
+
 
     //Vung's code to Draw boxplot ticks
     //TODO: Comment these lines if we would like to use the same scale as the profile.
@@ -178,6 +218,7 @@ function drawBoxplot() {
         .attr("y2", function (d, i) {
             return yStartBoxplot - hBoxplotScale(d.maxAbove);
         });
+
     svg.selectAll(".boxplotLineBelow").remove();
     svg.selectAll(".boxplotLineBelow")
         .data(boxplotNodes).enter()
@@ -246,21 +287,23 @@ function drawBoxplot() {
 var tNodes;
 let lensedTextCloudRange = [10, 16];
 let textCloudRange = [6, 12];
-let cloudTextLength = 5;
-let lensedCloudTextLength = 12;
 function drawTextClouds(yTextClouds) {
     tNodes = [];
-    for (var y = 1; y <= dataS.YearsData.length; y++) {
+    var varName = metaData.listOfVariables[var1];
+    for (var t = 0; t < numMonth; t++) {
         var nodes = [];
-        for (var c = 0; c < countryList.length; c++) {
-            nodes.push(countryList[c]);
+        for (var c = 0; c < computes.length; c++) {
+            nodes.push(computes[c]);
         }
-
         nodes.sort(function (a, b) {
-            if (Math.abs(a[y].OutlyingDif) < Math.abs(b[y].OutlyingDif))
-                return 1;
+            if (a[varName]!=undefined && b[varName]!=undefined){
+                if (Math.abs(a[varName][t]) < Math.abs(b[varName][t]))
+                    return 1;
+                else
+                    return -1;
+            }
             else
-                return -1;
+                return 0;
         });
 
         for (var i = 0; i < numTermsWordCloud; i++) {
@@ -277,31 +320,35 @@ function drawTextClouds(yTextClouds) {
         .attr("class", "textCloud3")
         .style("text-anchor", "middle")
         .attr("font-family", "sans-serif")
-        .attr("font-size", function (d, i) {
+        .style("font-size", function (d, i) {
+
             var y = Math.floor(i / numTermsWordCloud);
             if (lMonth - numLens <= y && y <= lMonth + numLens) {
                 var sizeScale = d3.scale.linear()
                     .range(lensedTextCloudRange)
                     .domain([0, maxAbs]);
-                if (Math.abs(d[y + 1].OutlyingDif) < outlyingCut)
-                    d.fontSize = 0;
-                else
-                    d.fontSize = sizeScale(Math.abs(d[y + 1].OutlyingDif));
+                return "12px";
+                //if (Math.abs(d[y + 1].OutlyingDif) < outlyingCut)
+                //    d.fontSize = 0;
+                //else
+                //    d.fontSize = sizeScale(Math.abs(d[y + 1].OutlyingDif));
             }
             else {
                 var sizeScale = d3.scale.linear()
                     .range(textCloudRange)
                     .domain([0, maxAbs]);
-                if (Math.abs(d[y + 1].OutlyingDif) < outlyingCut * 2)
-                    d.fontSize = 0;
-                else
-                    d.fontSize = sizeScale(Math.abs(d[y + 1].OutlyingDif));
+                return "4px";
+                //if (Math.abs(d[y + 1].OutlyingDif) < outlyingCut * 2)
+                //    d.fontSize = 0;
+                //else
+                //    d.fontSize = sizeScale(Math.abs(d[y + 1].OutlyingDif));
             }
-            return d.fontSize;
+
         })
         .style("fill", function (d, i) {
-            var y = Math.floor(i / numTermsWordCloud);
-            return colorPurpleGreen(d[y + 1].OutlyingDif);
+            return "#000";
+            //var y = Math.floor(i / numTermsWordCloud);
+            //return colorPurpleGreen(d[y + 1].OutlyingDif);
         })
         .attr("x", function (d, i) {
             return xStep + xScale(Math.floor(i / numTermsWordCloud));    // x position is at the arcs
@@ -310,7 +357,8 @@ function drawTextClouds(yTextClouds) {
             return yTextClouds + (i % numTermsWordCloud) * yStep;     // Copy node y coordinate
         })
         .text(function (d) {
-            return d[0].country.substring(0, cloudTextLength);
+            return d.name;
+            //return d[0].country.substring(0, cloudTextLength);
         });
 
 }
