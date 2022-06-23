@@ -30,7 +30,7 @@ var xStep = 210;
 var searchTerm;
 
 var isLensing;
-var lensingMul = 5;
+var lensingMul = 8;
 var lMonth;
 var oldLmonth; // use this variable to compare if we are lensing over a different month
 
@@ -230,7 +230,7 @@ function loadData() {
                 .attr("width", width)
                 .attr("height", heightSVG);
 
-            numMonth = dataS.time_stamp.length;
+            numMonth = dataS.time_stamp.length/3;
             XGAP_ = (width - xStep - 2) / numMonth; // gap between months on xAxis
 
             drawColorLegend();

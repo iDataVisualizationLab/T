@@ -6,7 +6,7 @@
  * OF THIS SOFTWARE OR ITS FITNESS FOR ANY PARTICULAR PURPOSE.
  */
 
-var forceSize = 60; // Max size of force layouts at the bottom
+var forceSize = 90; // Max size of force layouts at the bottom
 
 var allSVG = [];
 var pointOpacity = 0.9;
@@ -16,7 +16,7 @@ var selectedScag = 0;
 function updateSubLayout(m) {
     svg.selectAll(".force" + m).remove();
 
-    var xPos = xStep - forceSize / 2 + m * XGAP_*10;
+    var xPos = xStep - forceSize / 2 + m * XGAP_;
 
     var svg2 = svg.append("svg")
         .attr("class", "force" + m)
@@ -31,8 +31,7 @@ function updateSubLayout(m) {
      .attr("fill-opacity", 0.5);*/
     allSVG.push(svg2);
 
-    var size = 50;
-    // var size = 60;//TODO: This is for the teaser only (switch back the previous one for normal page)
+    var size = 20;
     var padding = 0;
 
     var x2 = 0;
@@ -119,7 +118,12 @@ function updateSubLayout(m) {
             }
         })
         .attr("r", function (d) {
-            return 2;
+            var vName1 = metaData.listOfVariables[var1];
+            var vName2 = metaData.listOfVariables[var2];
+            if (d[vName1]==undefined || d[vName2]==undefined)
+               return 0;
+            else
+                return 1;
         })
         .style("stroke", "#fff")
         .style("stroke-width", 0.02)
