@@ -18,7 +18,6 @@ var computes = [];
 var var1 = 8;  // 8=PowerMetrics
 var var2 = 12; // 12=memoryusage
 
-
 //Append a SVG to the body of the html page. Assign this SVG as an object to svg
 var svg = d3.select("body").append("svg")
     .attr("width", width)
