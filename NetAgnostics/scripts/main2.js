@@ -29,7 +29,7 @@ var countryList = [];
 var countryListFiltered = [];
 var countryListYDistance = 22;//we changed this to increase the country list distance.
 
-var colorPurpleGreen = d3.scale.linear()
+var colorPurpleGreen = d3.scaleLinear()
     .domain([0, 0, 0])
     .range([colorBelow, "#666", colorAbove]);
 
@@ -49,13 +49,13 @@ function computeMonthlyGraphs() {
 }
 
 
-var yScaleS = d3.scale.linear()
+var yScaleS = d3.scaleLinear()
     .range([0, 80])
     .domain([0, 1]);
 
 
-var areaAbove = d3.svg.area()
-    .interpolate(interpolation)
+var areaAbove = d3.area()
+   // .interpolate(interpolation)
     .x(function (d, i) {
         if (i == 0)
             return xStep - 10;
@@ -82,8 +82,8 @@ var areaAbove = d3.svg.area()
         }
     });
 
-var areaBelow = d3.svg.area()
-    .interpolate(interpolation)
+var areaBelow = d3.area()
+    //.interpolate(interpolation)
     .x(function (d, i) {
         if (i == 0)
             return xStep - 10;
@@ -189,7 +189,7 @@ function drawgraph2() {
     //** BOX PLOT **********************************************************
     drawBoxplot();   // in main3.js
     //** COUNTRY PROFILE **********************************************************
-    //drawCountryProfiles();
+    drawCountryProfiles();
 }
 
 function drawCountryProfiles() {
@@ -199,13 +199,10 @@ function drawCountryProfiles() {
     // countryListFiltered = countryListFiltered.filter(c => c[0].country === "Lesotho" || c[0].country === "Zimbabwe"  || c[0].country === "Swaziland");
     // </editor-fold>
 
-    yStart = yStartBoxplot + hBoxplotScale(d3.max(boxplotNodes.map(obj => -obj.maxBelow))) + yScaleS(d3.max(countryListFiltered[0].map(d => d.Outlying + Math.abs(d.OutlyingDif)))) + 10;//10 is for the margin
-
+    yStart = yStartBoxplot + 120;//10 is for the margin
     var yTemp2 = yStart;
-    for (var c = 0; c < countryListFiltered.length; c++) {
-        for (var y = 0; y < countryListFiltered[c].length; y++) {
-            countryListFiltered[c][y].y = yTemp2;
-        }
+    for (var c = 0; c < computes.length; c++) {
+        computes[c].y = yTemp2;
         yTemp2 += countryListYDistance;
     }
 
@@ -247,22 +244,72 @@ function drawCountryProfiles() {
 
     // </editor-fold>
 
+    /*
     svg.selectAll(".layerAbove").remove();
     svg.selectAll(".layerAbove")
-        .data(countryListFiltered).enter()
+        .datum(computes)
         .append("path")
-        .attr("class", "layerAbove")
+            .attr("stroke", "#000")
+        .attr("stroke-linejoin", "round")
+        .attr("stroke-linecap", "round")
+        .attr("stroke-width", 5)
+        .style("fill", "#f00")
+        .attr("d", d3.line().x(function(d,i) { return i*2; }).y(function(d,i) { return yStart*20; }));
+*/
+    /*
+    var valueline = d3.line()
+        .x(function(d,i) { return i*10;})
+        .y(function(d,i) { return i*10;; });
+    // add the valueline path.
+    svg.append("path")
+        .data([computes])
+        .attr("class", "lineddd")
         .style("stroke", "#000")
-        .style("stroke-width", 0.2)
+        .style("stroke-width", 1)
         .style("stroke-opacity", 0.5)
-        .style("fill-opacity", 1)
-        .style("fill", colorAbove)
-        .attr("d", function (d) {
-            return areaAbove(d);
+        .style("fill-opacity", 0.2)
+        .style("fill", colorAbove).attr("d", valueline);
+    */
+
+
+
+    var varName1 = metaData.listOfVariables[var1];
+ 
+    var areaTopAbove2 = d3.area()
+        .x(function (d, i) {
+            return xStep + xScale(i);
+        })
+        .y0(function (d, i) {
+            return d.y;
+        })
+        .y1(function (d, i) {
+            return d.y - d.value/10;
         });
+    svg.selectAll(".layerTopAbove2").remove();
+    for (let c=0; c < computes.length; c++){
+        var profile = [];
+        if (computes[c][varName1]!=undefined){
+            for (let i=0; i<computes[c][varName1].length;i++){
+                var obj= new Object();
+                obj.value = computes[c][varName1][i];
+                obj.y = computes[c].y;
+                profile.push(obj);
+            }
+            svg.append("path")
+                .attr("class", "layerTopAbove2")
+                .style("stroke", "#000")
+                .style("stroke-width", 1)
+                .style("stroke-opacity", 0.5)
+                .style("fill-opacity", 0.2)
+                .style("fill", colorAbove)
+                .attr("d", areaTopAbove2(profile));
+        }
+    }
+
+/*
     svg.selectAll(".layerBelow").remove();
     svg.selectAll(".layerBelow")
-        .data(countryListFiltered).enter()
+        .data(computes).enter()
         .append("path")
         .attr("class", "layerBelow")
         .style("stroke", "#000")
@@ -270,9 +317,7 @@ function drawCountryProfiles() {
         .style("stroke-opacity", 0.5)
         .style("fill-opacity", 1)
         .style("fill", colorBelow)
-        .attr("d", function (d) {
-            return areaBelow(d);
-        });
+        .attr("d", d3.line().x(function(d,i) { return i*20; }).y(function(d,i) { return i*20; }));*/
     //<editor-fold desc="TODO: These baselines are enabled to explain the profile only">
     // svg.selectAll(".outlyingBaseLine").remove();
     // svg.selectAll(".outlyingBaseLine")
@@ -298,7 +343,7 @@ function drawCountryProfiles() {
 
     svg.selectAll(".countryText").remove();
     svg.selectAll(".countryText")
-        .data(countryListFiltered).enter()
+        .data(computes).enter()
         .append("text")
         .attr("class", "countryText")
         .style("fill", function (d) {
@@ -310,12 +355,12 @@ function drawCountryProfiles() {
             return xStep - 11;    // x position is at the arcs
         })
         .attr("y", function (d, i) {
-            return d[0].y;     // Copy node y coordinate
+            return d.y;     // Copy node y coordinate
         })
         .attr("font-family", "sans-serif")
-        .attr("font-size", "14px")
+        .attr("font-size", "11px")
         .text(function (d) {
-            return d[0].country;
+            return d.name;
         })
         .on("mouseover", function (d) {
             var countryIndex = dataS.Countries.indexOf(d[0].country);
@@ -477,12 +522,12 @@ function updateTextClouds() {
         .style("font-size", function (d, i) {
             var y = Math.floor(i / numTermsWordCloud);
             if (lMonth - numLens <= y && y <= lMonth + numLens) {
-                var sizeScale = d3.scale.linear()
+                var sizeScale = d3.scaleLinear()
                     .range(lensedTextCloudRange)
                     .domain([0, maxAbs]);
                 return "12px";
             } else {
-                var sizeScale = d3.scale.linear()
+                var sizeScale = d3.scaleLinear()
                     .range(textCloudRange)
                     .domain([0, maxAbs]);
                 return "4px";
@@ -548,7 +593,7 @@ function updateTimeSeries() {
 
     svg.selectAll(".countryText").transition().duration(transitionTime)
         .attr("y", function (d, i) {
-            return d[0].y;     // Copy node y coordinate
+            return d.y;     // Copy node y coordinate
         })
     svg.selectAll(".layerBelow").transition().duration(transitionTime)
         .attr("d", areaBelow);

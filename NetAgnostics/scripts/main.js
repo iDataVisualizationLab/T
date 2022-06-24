@@ -63,8 +63,8 @@ function xScale(m) {
     }
 }
 
-var area = d3.svg.area()
-    .interpolate("linear")
+var area = d3.area()
+    //.interpolate("linear")
     .x(function (d) {
         return xStep + xScale(d.monthId);
     })

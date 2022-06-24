@@ -10,8 +10,8 @@ var numTermsWordCloud = 6; // numTerms in each month
 var boxplotHeight = 90; // numTerms in each month
 var hBoxplotScale = null;
 
-var areaTopAbove = d3.svg.area()
-    .interpolate(interpolation)
+var areaTopAbove = d3.area()
+   // .interpolate(interpolation)
     .x(function (d, i) {
         return xStep + xScale(i);
     })
@@ -21,8 +21,8 @@ var areaTopAbove = d3.svg.area()
     .y1(function (d, i) {
         return yStartBoxplot - hBoxplotScale(d.maxAbove);
     });
-var areaTopBelow = d3.svg.area()
-    .interpolate(interpolation)
+var areaTopBelow = d3.area()
+   // .interpolate(interpolation)
     .x(function (d, i) {
         return xStep + xScale(i);
     })
@@ -120,7 +120,7 @@ function drawBoxplot() {
 
     //Vung's code to Draw boxplot ticks
     //TODO: Comment these lines if we would like to use the same scale as the profile.
-    hBoxplotScale = d3.scale.linear()
+    hBoxplotScale = d3.scaleLinear()
         .range([1, boxplotHeight])
         .domain([0, maxAbs]);
     //Recalculate the yBoxPlotStart basing on the maximum above value
@@ -334,7 +334,7 @@ function drawTextClouds(yTextClouds) {
                 //    d.fontSize = sizeScale(Math.abs(d[y + 1].OutlyingDif));
             }
             else {
-                var sizeScale = d3.scale.linear()
+                var sizeScale = d3.scaleLinear()
                     .range(textCloudRange)
                     .domain([0, maxAbs]);
                 return "4px";

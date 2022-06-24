@@ -7,7 +7,7 @@ var yTimeBox = 0;
 
 var colorArray = ["#9dbee6", "#afcae6", "#c8dce6", "#e6e6d8", "#e6d49c", "#e6852f", "#e61e1a"];
 
-var colorRedBlue = d3.scale.linear()
+var colorRedBlue = d3.scaleLinear()
     .domain([0,0.2, 0.4, 0.6, 0.8, 0.9, 1])
     .range(colorArray);
 
@@ -44,7 +44,7 @@ function drawColorLegend() {
     var netMax = metaData.listOfMaxs_Net[var1];
 
 
-    colorRedBlue = d3.scale.linear()
+    colorRedBlue = d3.scaleLinear()
         .domain([netMin,netMin/2, netMin/4, 0, netMax/4, netMax/2, netMax])
         .range(colorArray);
 
