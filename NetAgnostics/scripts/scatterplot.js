@@ -92,6 +92,7 @@ function updateSubLayout(m) {
         .range([size / 35, size / 10])
         .domain([0, 1]);
 
+    /*
     svg2.selectAll("circle")
         .data(computes)
         .enter().append("circle")
@@ -141,5 +142,7 @@ function updateSubLayout(m) {
         .on("mouseout", function (d) {
             hideTip(d);
         });
+
+     */
     setExploreEvent(svg2, dataPoints, dataS.Variables);
 }

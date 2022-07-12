@@ -24,7 +24,7 @@ var yStartBoxplot;
 var yTextClouds;
 var boxHeight = 75;
 var textCloudHeight = 75;
-var transitionTime = 1000;
+var transitionTime = 2000;
 var countryList = [];
 var countryListFiltered = [];
 var countryListYDistance = 22;//we changed this to increase the country list distance.
@@ -108,6 +108,22 @@ var areaBelow = d3.area()
                 return d.y - yScaleS(scagLeaveOriginal);
         }
     });
+
+
+// 2022 new function  **************************************************
+var profiles =[]; // entries profiles
+var areaAbove2 = d3.area()
+    .x(function (d, i) {
+        return xStep + xScale(i);
+    })
+    .y0(function (d, i) {
+        return d.y;
+    })
+    .y1(function (d, i) {
+        return d.y - d.value/10;
+    });
+
+
 
 function drawgraph2() {
     //need to reset these values every time we calculate a new data set
@@ -275,36 +291,58 @@ function drawCountryProfiles() {
 
     var varName1 = metaData.listOfVariables[var1];
  
-    var areaTopAbove2 = d3.area()
-        .x(function (d, i) {
-            return xStep + xScale(i);
-        })
-        .y0(function (d, i) {
-            return d.y;
-        })
-        .y1(function (d, i) {
-            return d.y - d.value/10;
-        });
-    svg.selectAll(".layerTopAbove2").remove();
+
+    svg.selectAll(".layerProfile").remove();
+    profiles = [];
     for (let c=0; c < computes.length; c++){
-        var profile = [];
+        var pro = [];
         if (computes[c][varName1]!=undefined){
             for (let i=0; i<computes[c][varName1].length;i++){
                 var obj= new Object();
                 obj.value = computes[c][varName1][i];
-                obj.y = computes[c].y;
-                profile.push(obj);
+                obj.y = computes[c].y;   /// IMPROVE
+                obj.name = computes[c].name;
+                pro.push(obj);
             }
+            profiles.push(pro)
+
             svg.append("path")
-                .attr("class", "layerTopAbove2")
+                .attr("class", function (d){
+                    return "layerProfile"+computes[c].name;
+                })
                 .style("stroke", "#000")
                 .style("stroke-width", 1)
                 .style("stroke-opacity", 0.5)
                 .style("fill-opacity", 0.2)
                 .style("fill", colorAbove)
-                .attr("d", areaTopAbove2(profile));
+                .attr("d", areaAbove2(pro));
         }
     }
+
+    svg.selectAll(".profileText").remove();
+    svg.selectAll(".profileText")
+        .data(computes).enter()
+        .append("text")
+        .attr("class", function (d){
+            return "profileText" +d.name;
+        })
+        .style("fill", function (d) {
+            return "#000";
+        })
+        .style("text-anchor", "end")
+        .style("text-shadow", "1px 1px 0 rgba(255, 255, 255, 0.99")
+        .attr("x", function (d) {
+            return xStep - 11;    // x position is at the arcs
+        })
+        .attr("y", function (d, i) {
+            return d.y;     // Copy node y coordinate
+        })
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "11px")
+        .text(function (d) {
+            return d.name;
+        })
+        ;
 
 /*
     svg.selectAll(".layerBelow").remove();
@@ -341,7 +379,7 @@ function drawCountryProfiles() {
     //     .attr("d", countryBaseLine);
     //</editor-fold>
 
-    svg.selectAll(".countryText").remove();
+    /*svg.selectAll(".countryText").remove();
     svg.selectAll(".countryText")
         .data(computes).enter()
         .append("text")
@@ -377,7 +415,7 @@ function drawCountryProfiles() {
         })
         .on("mouseout", function (d) {
             hideTip(d);
-        });
+        });*/
 
     // Text of max different appearing on top of the stream graph
     svg.selectAll(".maxAboveText").remove();
@@ -591,14 +629,49 @@ function updateTimeSeries() {
         yTemp2 += countryListYDistance;
     }
 
-    svg.selectAll(".countryText").transition().duration(transitionTime)
-        .attr("y", function (d, i) {
-            return d.y;     // Copy node y coordinate
-        })
+
     svg.selectAll(".layerBelow").transition().duration(transitionTime)
         .attr("d", areaBelow);
     svg.selectAll(".layerAbove").transition().duration(transitionTime)
         .attr("d", areaAbove);
+
+
+   // debugger;
+    if (brushingYear>=0){
+        profiles.sort(function (a, b) {
+            if (a[brushingYear].value < b[brushingYear].value){
+                return 1;
+            }
+            else
+                return -1;
+        });
+    }
+
+    var yTemp2 = yStart;
+    for (var c = 0; c < profiles.length; c++) {
+        for (var j = 0; j < profiles[c].length; j++) {
+            profiles[c][j].y = yTemp2;
+        }
+        yTemp2 += countryListYDistance;
+    }
+
+    //********************************************
+   if (profiles!= undefined){
+        for (let c=0; c < computes.length; c++) {
+            if (profiles[c]!= undefined) {
+                var pName = ".layerProfile" + profiles[c][0].name;
+                svg.selectAll(pName).transition().duration(transitionTime)
+                    .attr("d", areaAbove2(profiles[c]));
+                svg.selectAll(".profileText"+profiles[c][0].name).transition().duration(transitionTime)
+                    .attr("y", function (d, i) {
+                        return profiles[c][0].y;     // Copy node y coordinate
+                    })
+            }
+
+        }
+    }
+
+
 
     svg.selectAll(".layerTopAbove").transition().duration(transitionTime)
         .attr("d", areaTopAbove(boxplotNodes));

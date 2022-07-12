@@ -310,8 +310,7 @@ function drawTextClouds(yTextClouds) {
             tNodes.push(nodes[i]);
         }
     }
-    // ************ maxAbs ************ defined in main2.js 
-
+    // ************ maxAbs ************ defined in main2.js
     svg.selectAll(".textCloud3").remove();
     var yStep = 12;
     svg.selectAll(".textCloud3")
