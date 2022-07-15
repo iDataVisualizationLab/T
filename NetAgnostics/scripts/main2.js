@@ -126,79 +126,6 @@ var areaAbove2 = d3.area()
 
 
 function drawgraph2() {
-    //need to reset these values every time we calculate a new data set
-    var maxDifAboveForAll = 0;
-    var maxDifBelowForAll = 0;
-    var maxDifAbsoluteForAll = 0;
-
-    var startMonth = lMonth > numLens ? lMonth - numLens : 0;
-    if (lMonth < 0)
-        startMonth = -100;   // Do not draw arc diagram if not lensed
-    var endMonth = startMonth + numLens * 2 + 1;
-
-    // yStart = height + 275 + 30; // y starts drawing the stream graphs, added 50 to bring these downs
-
-    // Scagnostics stream graphs
-    /*
-    countryList = [];
-    for (var c = 0; c < dataS.Countries.length; c++) {
-        var country = dataS.Countries[c];
-
-        // Add the first element
-        var obj1 = {};
-        obj1.country = country;  // Using for setting time series titles
-        var obj2 = {};
-
-        var thisCountryData = dataS.CountriesData[country].slice();
-        if (thisCountryData.length == dataS.YearsData.length) { // Avoid multiple push
-            thisCountryData.unshift(obj1);
-            thisCountryData.push(obj2);
-        }
-        thisCountryData.maxDifAbove = 0;
-        thisCountryData.maxDifBelow = 0;
-        for (var y = 0; y < thisCountryData.length; y++) {
-            if (y == 0 || y == thisCountryData.length - 1) { // Dummy elements
-                thisCountryData[y].OutlyingDif = 0;
-            } else {
-                var scagLeaveOriginal = dataS.YearsData[y - 1].Scagnostics0[selectedScag];
-                var dif = thisCountryData[y].Outlying - scagLeaveOriginal; // Different between leave 1 out and original scatterplot
-                thisCountryData[y].OutlyingDif = dif;
-                if (dif > 0 && dif > thisCountryData.maxDifAbove) {
-                    thisCountryData.maxDifAbove = dif;
-                    thisCountryData.maxYearAbove = y - 1;
-                } else if (dif < 0 && dif < thisCountryData.maxDifBelow) {
-                    thisCountryData.maxDifBelow = dif;
-                    thisCountryData.maxYearBelow = y - 1;
-                }
-            }
-        }
-        thisCountryData.maxDifAbsolute = Math.max(thisCountryData.maxDifAbove, Math.abs(thisCountryData.maxDifBelow));
-        // Max of maxDifAbove and maxDifBelow ******
-        if (thisCountryData.maxDifAbove > maxDifAboveForAll) {
-            maxDifAboveForAll = thisCountryData.maxDifAbove;
-            countryList.maxYearAbove = thisCountryData.maxYearAbove;
-        }
-        if (thisCountryData.maxDifBelow < maxDifBelowForAll) {
-            maxDifBelowForAll = thisCountryData.maxDifBelow;
-            countryList.maxYearBelow = thisCountryData.maxYearBelow;
-        }
-        if (thisCountryData.maxDifAbsolute > maxDifAbsoluteForAll) {
-            maxDifAbsoluteForAll = thisCountryData.maxDifAbsolute;
-            countryList.maxYearAbsolute = thisCountryData.maxDifAbove >= Math.abs(thisCountryData.maxDifBelow) ? thisCountryData.maxYearAbove : thisCountryData.maxYearBelow;
-        }
-        countryList.push(thisCountryData);
-    }
-    maxAbs = Math.max(maxDifAboveForAll, Math.abs(maxDifBelowForAll));
-    //Filtered country list (with outlying score difference > some point).
-    countryListFiltered = countryList.filter(c => Math.abs(c.maxDifAbsolute) > 0.01);
-
-    colorPurpleGreen.domain([maxDifBelowForAll, 0, maxDifAboveForAll]);
-
-
-    countryListFiltered.sort(function (a, b) {
-        return a.maxDifBelow - b.maxDifBelow;
-    });*/
-
     //** TEXT CLOUD **********************************************************
     yTextClouds = height + boxHeight; // 75 is the height of the text cloud section.
     drawTextClouds(yTextClouds);    // in main3.js
@@ -209,12 +136,6 @@ function drawgraph2() {
 }
 
 function drawCountryProfiles() {
-
-    // <editor-fold desc="TODO: This is enabled for the explanation of the profile only.">
-    // countryListYDistance = 80;
-    // countryListFiltered = countryListFiltered.filter(c => c[0].country === "Lesotho" || c[0].country === "Zimbabwe"  || c[0].country === "Swaziland");
-    // </editor-fold>
-
     yStart = yStartBoxplot + 120;//10 is for the margin
     var yTemp2 = yStart;
     for (var c = 0; c < computes.length; c++) {
@@ -272,25 +193,11 @@ function drawCountryProfiles() {
         .style("fill", "#f00")
         .attr("d", d3.line().x(function(d,i) { return i*2; }).y(function(d,i) { return yStart*20; }));
 */
-    /*
-    var valueline = d3.line()
-        .x(function(d,i) { return i*10;})
-        .y(function(d,i) { return i*10;; });
-    // add the valueline path.
-    svg.append("path")
-        .data([computes])
-        .attr("class", "lineddd")
-        .style("stroke", "#000")
-        .style("stroke-width", 1)
-        .style("stroke-opacity", 0.5)
-        .style("fill-opacity", 0.2)
-        .style("fill", colorAbove).attr("d", valueline);
-    */
 
 
-
+  //  var varName1 = metaData.listOfVariables[var1];
     var varName1 = metaData.listOfVariables[var1];
- 
+
 
     svg.selectAll(".layerProfile").remove();
     profiles = [];
@@ -300,12 +207,12 @@ function drawCountryProfiles() {
             for (let i=0; i<computes[c][varName1].length;i++){
                 var obj= new Object();
                 obj.value = computes[c][varName1][i];
+                obj.net = computes[c][varName1+"_Net"][i];
                 obj.y = computes[c].y;   /// IMPROVE
                 obj.name = computes[c].name;
                 pro.push(obj);
             }
             profiles.push(pro)
-
             svg.append("path")
                 .attr("class", function (d){
                     return "layerProfile"+computes[c].name;
@@ -314,8 +221,7 @@ function drawCountryProfiles() {
                 .style("stroke-width", 1)
                 .style("stroke-opacity", 0.5)
                 .style("fill-opacity", 0.2)
-                .style("fill", colorAbove)
-                .attr("d", areaAbove2(pro));
+                .style("fill", colorAbove);
         }
     }
 
@@ -579,7 +485,7 @@ function updateTextClouds() {
 
 
 function updateTimeSeries() {
-    var brushingYear = lMonth + 1;
+    var brushingYear = lMonth;
     var orderby = d3.select('#nodeDropdown').property('value');
     var interval = d3.select('#edgeWeightDropdown').property('value');
     countryListFiltered.sort(function (a, b) {
@@ -639,7 +545,7 @@ function updateTimeSeries() {
    // debugger;
     if (brushingYear>=0){
         profiles.sort(function (a, b) {
-            if (a[brushingYear].value < b[brushingYear].value){
+            if (Math.abs(a[brushingYear].net) < Math.abs(b[brushingYear].net)){
                 return 1;
             }
             else

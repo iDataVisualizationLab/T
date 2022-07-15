@@ -289,7 +289,7 @@ let lensedTextCloudRange = [10, 16];
 let textCloudRange = [6, 12];
 function drawTextClouds(yTextClouds) {
     tNodes = [];
-    var varName = metaData.listOfVariables[var1];
+    var varName = metaData.listOfVariables[var1]+"_Net";
     for (var t = 0; t < numMonth; t++) {
         var nodes = [];
         for (var c = 0; c < computes.length; c++) {

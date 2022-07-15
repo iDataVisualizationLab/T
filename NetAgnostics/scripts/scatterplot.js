@@ -43,8 +43,6 @@ function updateSubLayout(m) {
         .attr("y", margin)
         .attr("rx", 2)
         .attr("ry", 2)
-        // .attr("rx", 5)//TODO: This is for the teaser only (switch back the previous one for normal page)
-        // .attr("ry", 5)//TODO: This is for the teaser only (switch back the previous one for normal page)
         .attr("width", size - padding)
         .attr("height", size - padding)
         .style("fill", function (d) {
@@ -92,7 +90,7 @@ function updateSubLayout(m) {
         .range([size / 35, size / 10])
         .domain([0, 1]);
 
-    /*
+
     svg2.selectAll("circle")
         .data(computes)
         .enter().append("circle")
@@ -143,6 +141,6 @@ function updateSubLayout(m) {
             hideTip(d);
         });
 
-     */
+
     setExploreEvent(svg2, dataPoints, dataS.Variables);
 }
