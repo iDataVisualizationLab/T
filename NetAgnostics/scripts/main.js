@@ -34,7 +34,7 @@ var searchTerm;
 
 var isLensing;
 var lensingMul = 22;
-var lMonth;
+var lensingTimeStep;
 var oldLmonth; // use this variable to compare if we are lensing over a different month
 
 var XGAP_; // gap between months on xAxis
@@ -42,21 +42,20 @@ var numLens = 2;
 
 function xScale(m) {
     if (isLensing) {
-        var maxM = Math.max(0, lMonth - numLens - 1);
-        var numMonthInLense = (lMonth + numLens - maxM + 1);
-
+        var maxM = Math.max(0, lensingTimeStep - numLens - 1);
+        var numMonthInLense = (lensingTimeStep + numLens - maxM + 1);
         //compute the new xGap
         var total = numMonth + numMonthInLense * (lensingMul - 1);
         var xGap = (XGAP_ * numMonth) / total;
 
-        if (m < lMonth - numLens) {
+        if (m < lensingTimeStep - numLens) {
             var xx = m * xGap;
-            if (m == lMonth - numLens - 1)
+            if (m == lensingTimeStep - numLens - 1)
                 xx += xGap*4;
             return xx;
-        } else if (m > lMonth + numLens) {
-            var xx = maxM * xGap + numMonthInLense * xGap * lensingMul + (m - (lMonth + numLens + 1)) * xGap;
-            if (m == lMonth + numLens + 1)
+        } else if (m > lensingTimeStep + numLens) {
+            var xx = maxM * xGap + numMonthInLense * xGap * lensingMul + (m - (lensingTimeStep + numLens + 1)) * xGap;
+            if (m == lensingTimeStep + numLens + 1)
                 xx -= xGap*4;
             return xx;
         } else {
@@ -80,60 +79,13 @@ var area = d3.area()
     });
 
 var optArray = [];   // FOR search box
-var categories = ["Above Outlying of original plot", "Below Outlying of original plot"];
-var getColor3;  // Colors of categories
 
 //*****************************************************************
 var fileList = [
     "HPCC",
     "LifeExpectancy263",
-    "PrevalenceOfHIV",
-    "NYSEPriceVsVolume",
-    "InternationalDebtData",
-    "WorldTerrorism",
-    "USUnEmpRateMenVsWomen",
-    "USEmpRGoodVsService",
-    "HPCCTempVsFan",
-    "HPCC_04Oct",
 ];
-var fileAbbreviations = [
-    'WUER',
-    'WBLE',
-    'WBHIV',
-    'NYSE',
-    'WBID',
-    'WTRSM',
-    'USUER',
-    'USENC',
-    'Donotuse',
-    'HPCC'
-]
 
-var processedData = {
-    "UnemploymentRate": null,
-    "LifeExpectancy263": null,
-    "PrevalenceOfHIV": null,
-    "NYSEPriceVsVolume": null,
-    "InternationalDebtData": null,
-    "WorldTerrorism": null,
-    "USUnEmpRateMenVsWomen": null,
-    "USEmpRGoodVsService": null,
-    "HPCCTempVsFan": null,
-    "HPCC_04Oct": null
-};
-
-var timeSteps = {
-    "UnemploymentRate": {minTime: 1965, maxTime: 1985, type: "year"},//TODO: Change this For Customized Scatterplots due to missing data for this dataset.
-    "LifeExpectancy263": {minTime: 1960, maxTime: 2015, type: "year"},
-    "PrevalenceOfHIV": {minTime: 1990, maxTime: 2015, type: "year"},
-    "NYSEPriceVsVolume": {minTime: 1, maxTime: 84, type: "month"},
-    "InternationalDebtData": {minTime: 1970, maxTime: 2022, type: "year"},
-    "WorldTerrorism": {minTime: 1970, maxTime: 2017, type: "year"},
-    "USUnEmpRateMenVsWomen": {minTime: 1999, maxTime: 2017, type: "year"},
-    "USEmpRGoodVsService": {minTime: 0, maxTime: 223, type: "month"},
-    "HPCCTempVsFan": {minTime: 1, maxTime: 18, type: "quarter"},
-    "HPCC_04Oct": {minTime: 0, maxTime: 32, type: "quarter"},
-};
 // var fileName = fileList[fileList.length-1];
 var fileName = fileList[0];
 
@@ -154,7 +106,6 @@ var spinner = new Spinner(opts).spin(target);
 
 
 //addDatasetsOptions(); // Add these dataset to the select dropdown, at the end of this files
-
 loadData();
 drawControlPanel();
 
@@ -165,7 +116,7 @@ function loadData() {
         dataS= data_;
 
         // Process HPCC data ---- 2022
-        // Obtain the list of varriable to metaData
+        // Obtain the list of variable to metaData
         metaData.listOfVariables = [];
         var count=0;
         for (var key in dataS.nodes_info){
@@ -225,6 +176,7 @@ function loadData() {
             metaData.listOfMins.push(min);
             metaData.listOfMaxs.push(max);
         }
+
         // Compute the min and max of NET variables
         metaData.listOfMins_Net = [];
         metaData.listOfMaxs_Net = [];
@@ -246,109 +198,28 @@ function loadData() {
             metaData.listOfMaxs_Net.push(max);
         }
 
-        drawData2(data_)    ;
+        // Draw functions
+        svg.append("rect")
+            .attr("class", "background")
+            .style("fill", "#e8e8e8")
+            .attr("x", 0)
+            .attr("y", yTimeBox)
+            .attr("width", width)
+            .attr("height", heightSVG);
 
-        function drawData2(data_) {
-            svg.append("rect")
-                .attr("class", "background")
-                .style("fill", "#e8e8e8")
-                .attr("x", 0)
-                .attr("y", yTimeBox)
-                .attr("width", width)
-                .attr("height", heightSVG);
+        numMonth = dataS.time_stamp.length;
+        XGAP_ = (width - xStep - 2) / numMonth; // gap between months on xAxis
 
-            numMonth = dataS.time_stamp.length;
-            XGAP_ = (width - xStep - 2) / numMonth; // gap between months on xAxis
+        drawColorLegend();
+        drawTimeGrid();
+        drawTimeText();
+        drawTimeBox(); // This box is for brushing
 
-            drawColorLegend();
-            drawTimeGrid();
-            drawTimeText();
-            drawTimeBox(); // This box is for brushing
+        // Spinner Stop ********************************************************************
+        spinner.stop();
 
-            // Spinner Stop ********************************************************************
-            spinner.stop();
-
-            // 2017, this function is main2.js
-            computeMonthlyGraphs();
-        }
-
-        function drawData(dataS) {
-            searchTerm = "";
-            isLensing = false;
-            oldLmonth = -1000;
-            lMonth = -lensingMul * 2;
-
-            minYear = timeSteps[fileName].minTime;
-            maxYear = timeSteps[fileName].maxTime;
-
-            numMonth = maxYear - minYear + 1;
-            XGAP_ = (width - xStep - 2) / numMonth; // gap between months on xAxis
-
-            svg.append("rect")
-                .attr("class", "background")
-                .style("fill", "#fff")
-                .attr("x", 0)
-                .attr("y", yTimeBox)
-                .attr("width", width)
-                .attr("height", heightSVG);
-
-            drawColorLegend();
-            drawTimeGrid();
-            drawTimeText();
-            drawTimeBox(); // This box is for brushing
-
-            // 2017, this function is main2.js
-            computeMonthlyGraphs();
-
-
-            // Spinner Stop ********************************************************************
-            spinner.stop();
-
-            for (var i = 0; i < dataS.Countries.length; i++) {
-                optArray.push(dataS.Countries[i]);
-            }
-            optArray = optArray.sort();
-            $(function () {
-                $("#search").autocomplete({
-                    source: optArray
-                });
-            });
-
-            //    chartStreamGraphs();  // Streamgraphs********************************************************************
-            setTimeout(function () {
-                svg.append("text")
-                    .attr("class", "textLensingArea")
-                    .attr("x", width / 2)
-                    .attr("y", 20)
-                    .text("Lensing area")
-                    .attr("font-family", "sans-serif")
-                    .attr("font-size", "16px")
-                    .style("text-anchor", "middle")
-                    .style("font-weight", "bold")
-                    .style("text-shadow", "0 0 5px #aaa")
-                    .style("fill", "#000");
-                svg.selectAll(".timeLegendText")
-                    .style("fill-opacity", 0.05);
-
-                var startTime = new Date().getTime();
-                var interval2 = setInterval(function () {
-                    var d = new Date();
-                    var n = d.getMilliseconds();
-                    svg.selectAll(".textLensingArea")
-                        .style("fill-opacity", (n % 1000) / 1000);
-                    if (new Date().getTime() - startTime > 4000) {
-                        clearInterval(interval2);
-                        svg.selectAll(".textLensingArea").remove();
-                        svg.selectAll(".timeLegendText")
-                            .style("fill-opacity", function (d, i) {
-                                return getOpacity(d, i);
-                            });
-                        return;
-                    }
-
-                }, 50);
-            }, 3000);
-        }
+        // this function is main2.js
+        computeMonthlyGraphs();
     });
 }
 

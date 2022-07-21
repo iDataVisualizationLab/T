@@ -11,16 +11,12 @@ var colorRedBlue = d3.scaleLinear()
     .domain([0,0.2, 0.4, 0.6, 0.8, 0.9, 1])
     .range(colorArray);
 
-// These texts are different upon input dataset   
-var text1 = "terms";
-var text2 = "blogs";
-var textFile = "";
+var categories = ["Sudden Increase", "Sudden Drop"];
+
 
 function drawColorLegend() {
     var xx = 11;
-    var yy = 58;
     var rr = 5;
-
 
     // Scagnostics color legend ****************
     //Append a defs (for definition) element to your SVG
@@ -33,16 +29,12 @@ function drawColorLegend() {
         .attr("x1", "0%")
         .attr("y1", "0%")
         .attr("x2", "100%")
-        .attr("y2", "0%");
-
-
-
-    var yScagLegend = 36;
+        .attr("y2", "0%")
+    var yScagLegend = 50;
     var wScagLegend = 160;
     var measureName = metaData.listOfVariables[var1]+"_Net";
     var netMin = metaData.listOfMins_Net[var1];
     var netMax = metaData.listOfMaxs_Net[var1];
-
 
     colorRedBlue = d3.scaleLinear()
         .domain([netMin,netMin/2, netMin/4, 0, netMax/4, netMax/2, netMax])
@@ -54,7 +46,6 @@ function drawColorLegend() {
             .attr("offset", percent + "%")
             .attr("stop-color", colorArray[i]); //dark blue
     }
-
 
     //Draw the rectangle and fill with gradient
     svg.append("rect")
@@ -93,7 +84,7 @@ function drawColorLegend() {
         .text(netMax);
 
     // Draw color legend **************************************************
-    var yScagLegend2 = 132;
+    var yScagLegend2 = 400;
     svg.selectAll(".legendCircle").remove();
     svg.selectAll(".legendCircle")
         .data(categories).enter()
@@ -137,13 +128,9 @@ function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-
-
 var listX;
-
 function drawTimeGrid() {
     listX = [];
-
     for (var i = 0; i <= numMonth; i++) {
         var xx = xStep + xScale(i);
         var obj = {};
@@ -151,7 +138,6 @@ function drawTimeGrid() {
         obj.year = i;
         listX.push(obj);
     }
-
     svg.selectAll(".timeLegendLine").data(listX)
         .enter().append("line")
         .attr("class", "timeLegendLine")
@@ -200,7 +186,6 @@ function updateTimeLegend() {
         listX.push(obj);
     }
 
-
     svg.selectAll(".timeLegendLine").data(listX).transition().duration(transitionTime)
         .style("stroke-dasharray", function (d, i){
                 return i % 12 == 0 ? "3, 1" : "1, 3"
@@ -225,23 +210,19 @@ function updateTimeLegend() {
     for (var i = 0; i <= numMonth; i++) {
            var m = i;
             var view = "0 0 " + forceSize + " " + forceSize;
-            if (lMonth - numLens <= m && m <= lMonth + numLens)
+            if (lensingTimeStep - numLens <= m && m <= lensingTimeStep + numLens)
                 view = (forceSize * (1 - snapshotScale) / 2) + " " + (forceSize * (1 - snapshotScale) / 2) + " " + (forceSize * snapshotScale) + " " + (forceSize * snapshotScale);
-            else if (lMonth - numLens == m + 1) {
+            else if (lensingTimeStep - numLens == m + 1) {
                 var snapshotScale2 = snapshotScale * 1.8;
                 view = (forceSize * (1 - snapshotScale2 * 1.03) / 2) + " " + (forceSize * (1 - snapshotScale2) / 2) + " " + (forceSize * snapshotScale2) + " " + (forceSize * snapshotScale2);
-            } else if (m - 1 == lMonth + numLens) {
+            } else if (m - 1 == lensingTimeStep + numLens) {
                 var snapshotScale2 = snapshotScale * 1.8;
                 view = (forceSize * (1 - snapshotScale2 / 1.04) / 2) + " " + (forceSize * (1 - snapshotScale2) / 2) + " " + (forceSize * snapshotScale2) + " " + (forceSize * snapshotScale2);
-
             }
-
             svg.selectAll(".force" + m).transition().duration(transitionTime)
                 .attr("x", xStep - forceSize / 2 + xScale(m))
                 .attr("viewBox", view);
-
     }
-
 }
 
 // Used in util.js and main.js *****************
@@ -249,7 +230,7 @@ function getOpacity(d, i) {
     if (i % 12 == 0)
         return 0.7;
     else {
-        if (isLensing && lMonth - numLens <= i && i <= lMonth + numLens)
+        if (isLensing && lensingTimeStep - numLens <= i && i <= lensingTimeStep + numLens)
             return 1;
         else
             return 0;
@@ -274,8 +255,7 @@ function drawTimeBox() {
         .on("mousemove", function () {
             isLensing = true;
             coordinate = d3.mouse(this);
-            lMonth = Math.floor((coordinate[0] - xStep) / XGAP_);
-            console.log(" lMonth="+lMonth);
+            lensingTimeStep = Math.floor((coordinate[0] - xStep) / XGAP_);
             // Update layout
             updateTimeLegend();
             updateTimeBox();
@@ -291,18 +271,17 @@ function updateTimeBox() {
             return d.x;
         })
     ;
-
     // Recompute the timeArcs
-    if (oldLmonth != lMonth) {
+    if (oldLmonth != lensingTimeStep) {
         updategraph2();
-        oldLmonth = lMonth;
+        oldLmonth = lensingTimeStep;
     }
 }
 
 function clearLensing() {
     isLensing = false;
     oldLmonth = -1000;
-    lMonth = -lensingMul * 2;
+    lensingTimeStep = -lensingMul * 2;
     // Update layout
     updateTimeLegend();
     updateTimeBox();
@@ -324,16 +303,14 @@ function autoLensing() {
         let orderOptionIdx = document.getElementById("nodeDropdown").selectedIndex;
         if (orderOptionIdx === 0) {
             //Outliers
-            lMonth = countryList.maxYearBelow;
+            lensingTimeStep = countryList.maxYearBelow;
         } else if (orderOptionIdx === 1) {
             //Inliers
-            lMonth = countryList.maxYearAbove;
+            lensingTimeStep = countryList.maxYearAbove;
         } else {
             //Both
-            lMonth = countryList.maxYearAbsolute;
+            lensingTimeStep = countryList.maxYearAbsolute;
         }
-        // lMonth = countryList[0].maxYearBelow;
-        // lMonth = 3;
         // Update layout
         updateTimeLegend();
         updateTimeBox();
@@ -356,12 +333,6 @@ function showScore() {
     }
 }
 
-
-var buttonLensingWidth = 100;
-var buttonheight = 18;
-var roundConner = 4;
-var colorHighlight = "#fc8";
-var buttonColor = "#ddd";
 
 // Control panel on the left *********************
 function drawControlPanel() {

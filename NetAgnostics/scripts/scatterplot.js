@@ -1,4 +1,4 @@
-/* November 2017 
+/* July 2022
  * Tommy Dang, Assistant professor, iDVL@TTU
  *
  * THIS SOFTWARE IS BEING PROVIDED "AS IS", WITHOUT ANY EXPRESS OR IMPLIED
@@ -10,32 +10,23 @@ var forceSize = 90; // Max size of force layouts at the bottom
 
 var allSVG = [];
 var pointOpacity = 0.9;
-var selectedVar = 0;
 var selectedScag = 0;
 
-function updateSubLayout(m) {
+function updateScatterplots(m) {
     svg.selectAll(".force" + m).remove();
 
     var xPos = xStep - forceSize / 2 + m * XGAP_;
-
     var svg2 = svg.append("svg")
         .attr("class", "force" + m)
         .attr("width", forceSize)
         .attr("height", forceSize)
         .attr("x", xPos)
         .attr("y", 26);
-    /* svg2.append("rect")
-     .attr("width", "100%")
-     .attr("height", "100%")
-     .attr("fill", "pink")
-     .attr("fill-opacity", 0.5);*/
-    allSVG.push(svg2);
+     allSVG.push(svg2);
 
     var size = 20;
     var padding = 0;
 
-    var x2 = 0;
-    var y2 = 0;
     var margin = forceSize / 2 - size / 2;
     svg2.append("rect")
         .attr("class", "frame")
@@ -82,14 +73,6 @@ function updateSubLayout(m) {
         }
         dataPoints.push(obj);
     }
-
-    //Filter out data points with "NaN"
-   // dataPoints = dataPoints.filter(d => d["v0"] !== "NaN" && d["v1"] !== "NaN" && d["s0"] !== "NaN" && d["s1"] !== "NaN" && (!isNaN(d["ScagnosticsLeave1out0"][0] - d["Scagnostics0"][0])));
-
-    var scaleRadius = d3.scaleLinear()
-        .range([size / 35, size / 10])
-        .domain([0, 1]);
-
 
     svg2.selectAll("circle")
         .data(computes)
@@ -140,7 +123,5 @@ function updateSubLayout(m) {
         .on("mouseout", function (d) {
             hideTip(d);
         });
-
-
     setExploreEvent(svg2, dataPoints, dataS.Variables);
 }

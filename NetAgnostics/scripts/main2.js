@@ -1,23 +1,17 @@
-/* 2017
+/* 2022
  * Tommy Dang, Assistant professor, iDVL@TTU
  *
  * THIS SOFTWARE IS BEING PROVIDED "AS IS", WITHOUT ANY EXPRESS OR IMPLIED
  * WARRANTY.  IN PARTICULAR, THE AUTHORS MAKE NO REPRESENTATION OR WARRANTY OF ANY KIND CONCERNING THE MERCHANTABILITY
  * OF THIS SOFTWARE OR ITS FITNESS FOR ANY PARTICULAR PURPOSE.
  */
-var top100termsArray = []; // for user selection
-var graphByMonths = [];
-var numCut = 5;
-var cutOffvalue = [];
 
 
 var snapshotScale = 0.265; // Snapshiot Size******************************************************
-var maxRel = 15;   // for scaling, if count > 6 the link will looks similar to 6
 
 // Colors
 var colorAbove = "#0a0";
 var colorBelow = "#b06";
-var outlyingCut = 0.008; // Threshold to decide to show Outlier/Inliers in the World Clound
 var maxAbs;
 var yStart;
 var yStartBoxplot;
@@ -37,7 +31,7 @@ function computeMonthlyGraphs() {
     allSVG = []; // all SVG in clusters.js
     for (var m = 0; m < numMonth; m++) {
         // Draw network snapshot
-        updateSubLayout(m);
+        updateScatterplots(m);
     }
     updateTimeLegend();
     oldLmonth = -100;  // This to make sure the histogram and text list is updated
@@ -49,61 +43,6 @@ function computeMonthlyGraphs() {
 var yScaleS = d3.scaleLinear()
     .range([0, 80])
     .domain([0, 1]);
-
-var areaAbove = d3.area()
-   // .interpolate(interpolation)
-    .x(function (d, i) {
-        if (i == 0)
-            return xStep - 10;
-        else
-            return xStep + xScale(i - 1);
-    })
-    .y0(function (d, i) {
-        if (i == 0 || i == dataS.YearsData.length + 1) {
-            return d.y;
-        } else {
-            return d.y - yScaleS(dataS.YearsData[i - 1].Scagnostics0[selectedScag]);
-        }
-
-    })
-    .y1(function (d, i) {
-        if (i == 0 || i == dataS.YearsData.length + 1)
-            return d.y;
-        else {
-            var scagLeaveOriginal = dataS.YearsData[i - 1].Scagnostics0[selectedScag];
-            if (d.OutlyingDif > 0)
-                return d.y - yScaleS(scagLeaveOriginal) - yScaleS(d.OutlyingDif);
-            else
-                return d.y - yScaleS(scagLeaveOriginal);
-        }
-    });
-
-var areaBelow = d3.area()
-    //.interpolate(interpolation)
-    .x(function (d, i) {
-        if (i == 0)
-            return xStep - 10;
-        else
-            return xStep + xScale(i - 1);
-    })
-    .y0(function (d, i) {
-        if (i == 0 || i == dataS.YearsData.length + 1)
-            return d.y;
-        else {
-            return d.y - yScaleS(dataS.YearsData[i - 1].Scagnostics0[selectedScag]);
-        }
-    })
-    .y1(function (d, i) {
-        if (i == 0 || i == dataS.YearsData.length + 1)
-            return d.y;
-        else {
-            var scagLeaveOriginal = dataS.YearsData[i - 1].Scagnostics0[selectedScag];
-            if (d.OutlyingDif < 0)
-                return d.y - yScaleS(scagLeaveOriginal) + yScaleS(-d.OutlyingDif);
-            else
-                return d.y - yScaleS(scagLeaveOriginal);
-        }
-    });
 
 
 // 2022 new function  **************************************************
@@ -134,68 +73,16 @@ function drawgraph2() {
     //** BOX PLOT **********************************************************
     drawBoxplot();   // in main3.js
     //** COUNTRY PROFILE **********************************************************
-    drawCountryProfiles();
+    drawProfiles();
 }
 
-function drawCountryProfiles() {
+function drawProfiles() {
     yStart = yStartBoxplot + 120;
     var yTemp2 = yStart;
     for (var c = 0; c < computes.length; c++) {
         computes[c].y = yTemp2;
         yTemp2 += profileHeight;
     }
-
-    //<editor-fold desc="TODO: This is enabled for the grid of the item profile only.">
-    //Vung's code to Draw profile ticks
-    // countryListFiltered.forEach(c=>{
-    //         drawProfileGrid(c[0].y);
-    // });
-    // function drawProfileGrid(yPosition) {
-    //     let boxPlotGridData = [];
-    //     boxPlotGridData.push({"value": 0});
-    //     boxPlotGridData.push({"value": 0.2});
-    //     boxPlotGridData.push({"value": 0.4});
-    //     boxPlotGridData.push({"value": 0.6});
-    //
-    //
-    //     let profileGrid = svg.append("g").attr("transform", `translate(${0}, ${yPosition})`);
-    //     let enter = profileGrid.selectAll(".boxPlotGridLine").data(boxPlotGridData).enter();
-    //
-    //     function yBoxPlotGrid(d) {
-    //         return -yScaleS(d.value);
-    //     }
-    //
-    //     enter.append("line").attr("x1", xStep - 10).attr("y1", yBoxPlotGrid).attr("x2", +svg.attr("width")).attr("y2", yBoxPlotGrid)
-    //         .attr("class", "profileGrid")
-    //         .style("stroke", "#000")
-    //         .style("stroke-opacity", 1)
-    //         .style("stroke-width", 0.3)
-    //         .style("stroke-dasharray", "3, 1");
-    //
-    //
-    //     enter.append("text").attr("x", xStep - 10 - 5).attr("y", yBoxPlotGrid)
-    //         .attr("alignment-baseline", "middle")
-    //         .attr("class", "boxPlotTickLabel")
-    //         .attr("font-family", "san-serif")
-    //         .attr("font-size", "11px")
-    //         .text(d => d.value);
-    // }
-
-    // </editor-fold>
-
-    /*
-    svg.selectAll(".layerAbove").remove();
-    svg.selectAll(".layerAbove")
-        .datum(computes)
-        .append("path")
-            .attr("stroke", "#000")
-        .attr("stroke-linejoin", "round")
-        .attr("stroke-linecap", "round")
-        .attr("stroke-width", 5)
-        .style("fill", "#f00")
-        .attr("d", d3.line().x(function(d,i) { return i*2; }).y(function(d,i) { return yStart*20; }));
-*/
-
 
   //  var varName1 = metaData.listOfVariables[var1];
     var varName1 = metaData.listOfVariables[var1];
@@ -249,81 +136,7 @@ function drawCountryProfiles() {
         .attr("font-size", "11px")
         .text(function (d) {
             return d.name;
-        })
-        ;
-
-/*
-    svg.selectAll(".layerBelow").remove();
-    svg.selectAll(".layerBelow")
-        .data(computes).enter()
-        .append("path")
-        .attr("class", "layerBelow")
-        .style("stroke", "#000")
-        .style("stroke-width", 0.2)
-        .style("stroke-opacity", 0.5)
-        .style("fill-opacity", 1)
-        .style("fill", colorBelow)
-        .attr("d", d3.line().x(function(d,i) { return i*20; }).y(function(d,i) { return i*20; }));*/
-    //<editor-fold desc="TODO: These baselines are enabled to explain the profile only">
-    // svg.selectAll(".outlyingBaseLine").remove();
-    // svg.selectAll(".outlyingBaseLine")
-    //     .data(countryListFiltered).enter()
-    //     .append("path")
-    //     .style("stroke", "black")
-    //     .style("stroke-width", 1)
-    //     .style("stroke-opacity", 1)
-    //     .style("fill", "none")
-    //     .attr("stroke-dasharray", "2, 2")
-    //     .attr("d", outlyingBaseLine);
-    // svg.selectAll(".countryBaseLine").remove()
-    // svg.selectAll(".countryBaseLine")
-    //     .data(countryListFiltered).enter()
-    //     .append("path")
-    //     .style("stroke", "#000")
-    //     .style("stroke-width", 1)
-    //     .style("stroke-opacity", 1)
-    //     .style("fill", "none")
-    //     // .attr("stroke-dasharray", "3, 3")
-    //     .attr("d", countryBaseLine);
-    //</editor-fold>
-
-    /*svg.selectAll(".countryText").remove();
-    svg.selectAll(".countryText")
-        .data(computes).enter()
-        .append("text")
-        .attr("class", "countryText")
-        .style("fill", function (d) {
-            return "#000";
-        })
-        .style("text-anchor", "end")
-        .style("text-shadow", "1px 1px 0 rgba(255, 255, 255, 0.99")
-        .attr("x", function (d) {
-            return xStep - 11;    // x position is at the arcs
-        })
-        .attr("y", function (d, i) {
-            return d.y;     // Copy node y coordinate
-        })
-        .attr("font-family", "sans-serif")
-        .attr("font-size", "11px")
-        .text(function (d) {
-            return d.name;
-        })
-        .on("mouseover", function (d) {
-            var countryIndex = dataS.Countries.indexOf(d[0].country);
-            brushingStreamText(countryIndex);
-            // if autolensing is enable
-            if (document.getElementById("checkbox1").checked && d.maxYearBelow != undefined) {
-                isLensing = true;
-                lMonth = d.maxYearBelow;
-
-                // Update layout
-                updateTimeLegend();
-                updateTimeBox();
-            }
-        })
-        .on("mouseout", function (d) {
-            hideTip(d);
-        });*/
+        });
 
     // Text of max different appearing on top of the stream graph
     svg.selectAll(".maxAboveText").remove();
@@ -431,14 +244,14 @@ function updateBoxplots() {
     svg.selectAll(".boxplotRectAbove").transition().duration(transitionTime)
         .attr("x", function (d, i) {
             var w = XGAP_ / 4;
-            if (lMonth - numLens <= i && i <= lMonth + numLens) {
+            if (lensingTimeStep - numLens <= i && i <= lensingTimeStep + numLens) {
                 var w = XGAP_ / 2;
             }
             return xStep + xScale(i) - 0.5 * w;    // x position is at the arcs
         })
         .attr("width", function (d, i) {
             var w = XGAP_ / 4;
-            if (lMonth - numLens <= i && i <= lMonth + numLens) {
+            if (lensingTimeStep - numLens <= i && i <= lensingTimeStep + numLens) {
                 var w = XGAP_ / 2;
             }
             return w;
@@ -446,14 +259,14 @@ function updateBoxplots() {
     svg.selectAll(".boxplotRectBelow").transition().duration(transitionTime)
         .attr("x", function (d, i) {
             var w = XGAP_ / 4;
-            if (lMonth - numLens <= i && i <= lMonth + numLens) {
+            if (lensingTimeStep - numLens <= i && i <= lensingTimeStep + numLens) {
                 var w = XGAP_ / 2;
             }
             return xStep + xScale(i) - 0.5 * w;    // x position is at the arcs
         })
         .attr("width", function (d, i) {
             var w = XGAP_ / 4;
-            if (lMonth - numLens <= i && i <= lMonth + numLens) {
+            if (lensingTimeStep - numLens <= i && i <= lensingTimeStep + numLens) {
                 var w = XGAP_ / 2;
             }
             return w;
@@ -467,7 +280,7 @@ function updateTextClouds() {
         })
         .style("font-size", function (d, i) {
             var y = Math.floor(i / numTermsWordCloud);
-            if (lMonth - numLens <= y && y <= lMonth + numLens) {
+            if (lensingTimeStep - numLens <= y && y <= lensingTimeStep + numLens) {
                 var sizeScale = d3.scaleLinear()
                     .range(lensedTextCloudRange)
                     .domain([0, maxAbs]);
@@ -487,22 +300,10 @@ function updateTextClouds() {
 
 
 function updateTimeSeries() {
-    var brushingYear = lMonth;
-    var orderby = d3.select('#nodeDropdown').property('value');
-    var interval = d3.select('#edgeWeightDropdown').property('value');
-
-
-
-    svg.selectAll(".layerBelow").transition().duration(transitionTime)
-        .attr("d", areaBelow);
-    svg.selectAll(".layerAbove").transition().duration(transitionTime)
-        .attr("d", areaAbove);
-
-
-   // debugger;
-    if (brushingYear>=0){
+    var brushingTimeStep = lensingTimeStep;
+    if (brushingTimeStep>=0){
         profiles.sort(function (a, b) {
-            if (Math.abs(a[brushingYear].net) < Math.abs(b[brushingYear].net)){
+            if (Math.abs(a[brushingTimeStep].net) < Math.abs(b[brushingTimeStep].net)){
                 return 1;
             }
             else
@@ -539,7 +340,6 @@ function updateTimeSeries() {
         }
     }
 
-
     svg.selectAll(".layerTopAbove").transition().duration(transitionTime)
         .attr("d", areaTopAbove(boxplotNodes));
     svg.selectAll(".layerTopBelow").transition().duration(transitionTime)
@@ -573,5 +373,4 @@ function updateTimeSeries() {
             else
                 return d[0].y - yScaleS(d[d.maxYearBelow + 1].Outlying);
         });
-
 }

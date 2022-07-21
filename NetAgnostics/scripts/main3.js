@@ -45,34 +45,19 @@ function drawBoxplot() {
         obj.sumBelow = 0;
         obj.countAbove = 0;
         obj.countBelow = 0;
-
-
         var measureName = metaData.listOfVariables[var1]+"_Net";
-        for (var c=0; c<computes.length;c++){
-            if (computes[c][measureName]!= undefined){
-                if (computes[c][measureName][t]>0){
+        for (var c=0; c<computes.length;c++) {
+            if (computes[c][measureName] != undefined) {
+                if (computes[c][measureName][t] > 0) {
                     obj.sumAbove += computes[c][measureName][t];
                     obj.countAbove++;
                 }
-                if (computes[c][measureName][t]<0){
+                if (computes[c][measureName][t] < 0) {
                     obj.sumBelow += computes[c][measureName][t];
                     obj.countBelow++;
                 }
             }
-
         }
-
-        /*for (var c = 0; c < countryList.length; c++) {
-            nodes.push(countryList[c]);
-            if (countryList[c][y].OutlyingDif > 0) {
-                obj.sumAbove += countryList[c][y].OutlyingDif;
-                obj.countAbove++;
-            }
-            else if (countryList[c][y].OutlyingDif < 0) {
-                obj.sumBelow += countryList[c][y].OutlyingDif;
-                obj.countBelow++;
-            }
-        }*/
 
         for (var c = 0; c < computes.length; c++) {
             if (computes[c][measureName]!=undefined)
@@ -88,7 +73,6 @@ function drawBoxplot() {
             else
                 return 0;
         });
-
 
         if (obj.countAbove > 0)
             obj.averageAbove = obj.sumAbove / obj.countAbove;
@@ -322,7 +306,7 @@ function drawTextClouds(yTextClouds) {
         .style("font-size", function (d, i) {
 
             var y = Math.floor(i / numTermsWordCloud);
-            if (lMonth - numLens <= y && y <= lMonth + numLens) {
+            if (lensingTimeStep - numLens <= y && y <= lensingTimeStep + numLens) {
                 var sizeScale = d3.scale.linear()
                     .range(lensedTextCloudRange)
                     .domain([0, maxAbs]);
@@ -348,7 +332,6 @@ function drawTextClouds(yTextClouds) {
         })
         .text(function (d) {
             return d.name;
-            //return d[0].country.substring(0, cloudTextLength);
         });
 
 }
