@@ -238,6 +238,16 @@ function getOpacity(d, i) {
 
 
 function drawTimeBox() {
+    svg.append("text")
+        .attr("x", xStep-38)
+        .attr("y",21)
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "14px")
+       // .style("text-align", "right")
+       // .style("font-weight", "bold")
+        .style("fill", "#000")
+        .text("Time");
+
     svg.append("rect")
         .attr("class", "timeBox")
         .style("fill", "#666")
@@ -334,6 +344,8 @@ function showScore() {
 
 
 // Control panel on the left *********************
+var optionsPrimary;
+var optionsSecondary;
 function addVariable_to_dropdown() {
     //  List Dropdown *********************
     var listOptions = [];
@@ -342,20 +354,19 @@ function addVariable_to_dropdown() {
         listOptions.push(opt);
     }
     var selectOrder = d3.select('#varPrimary').on('change', updategraph2);
-    var Orderoptions = selectOrder.selectAll('option').data(listOptions).enter().append('option').attr('value', function (d) {
+    optionsPrimary = selectOrder.selectAll('option').data(listOptions).enter().append('option').attr('value', function (d) {
         return d.id;
     }).text(function (d) {
         return d.value;
     })
-    Orderoptions.attr("selected",metaData.listOfVariables[2]);
-    
+    optionsPrimary._groups[0][var1].selected = true;
 
     //  Secondary Dropdown *********************
     var select = d3.select('#varSecondary').on('change', updategraph2)
-    var options = select.selectAll('option').data(listOptions).enter().append('option').attr('value', function (d) {
+    optionsSecondary = select.selectAll('option').data(listOptions).enter().append('option').attr('value', function (d) {
         return d.id;
     }).text(function (d) {
         return d.value;
     })
-    options.attr("selected",8);
+    optionsSecondary._groups[0][var2].selected = true;
 }
