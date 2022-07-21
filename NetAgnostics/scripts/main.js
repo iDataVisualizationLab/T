@@ -107,7 +107,6 @@ var spinner = new Spinner(opts).spin(target);
 
 //addDatasetsOptions(); // Add these dataset to the select dropdown, at the end of this files
 loadData();
-drawControlPanel();
 
 function loadData() {
    // d3.json("data/" + fileName + ".json", function (data_) {
@@ -218,8 +217,10 @@ function loadData() {
         // Spinner Stop ********************************************************************
         spinner.stop();
 
-        // this function is main2.js
-        computeMonthlyGraphs();
+
+        computeMonthlyGraphs();    // this function is main2.js
+
+        addVariable_to_dropdown();  // In util.js
     });
 }
 

@@ -13,7 +13,6 @@ var colorRedBlue = d3.scaleLinear()
 
 var categories = ["Sudden Increase", "Sudden Drop"];
 
-
 function drawColorLegend() {
     var xx = 11;
     var rr = 5;
@@ -335,27 +334,28 @@ function showScore() {
 
 
 // Control panel on the left *********************
-function drawControlPanel() {
-    //  node Dropdown *********************
-    var nodedata = [{"id": 1, "value": "Outliers"}, {"id": 2, "value": "Inliers"}, {
-        "id": 3,
-        "value": "Both (absolute)"
-    }];
-    var selectOrder = d3.select('#nodeDropdown').on('change', updategraph2);
-    var Orderoptions = selectOrder.selectAll('option').data(nodedata).enter().append('option').attr('value', function (d) {
+function addVariable_to_dropdown() {
+    //  List Dropdown *********************
+    var listOptions = [];
+    for (let v = 0; v < metaData.listOfVariables.length; v++) {
+        var opt = {"id": v+1, "value": metaData.listOfVariables[v]};
+        listOptions.push(opt);
+    }
+    var selectOrder = d3.select('#varPrimary').on('change', updategraph2);
+    var Orderoptions = selectOrder.selectAll('option').data(listOptions).enter().append('option').attr('value', function (d) {
         return d.id;
     }).text(function (d) {
         return d.value;
     })
+    Orderoptions.property("selected",metaData.listOfVariables[9]);
+    
 
-    //  edge Weight Dropdown *********************
-    var edgeData = [{"id": 1, "value": "Brushing year"}, {"id": 2, "value": "All lensing years"}];
-    var select = d3.select('#edgeWeightDropdown').on('change', updategraph2)
-    var options = select.selectAll('option').data(edgeData).enter().append('option').attr('value', function (d) {
+    //  Secondary Dropdown *********************
+    var select = d3.select('#varSecondary').on('change', updategraph2)
+    var options = select.selectAll('option').data(listOptions).enter().append('option').attr('value', function (d) {
         return d.id;
     }).text(function (d) {
         return d.value;
     })
-
-
+    select.property("selected",8);
 }
