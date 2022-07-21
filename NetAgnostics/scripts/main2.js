@@ -27,7 +27,7 @@ var textCloudHeight = 75;
 var transitionTime = 2000;
 var countryList = [];
 var countryListFiltered = [];
-var countryListYDistance = 22;//we changed this to increase the country list distance.
+var profileHeight = 20;//we changed this to increase the country list distance.
 
 var colorPurpleGreen = d3.scaleLinear()
     .domain([0, 0, 0])
@@ -35,8 +35,6 @@ var colorPurpleGreen = d3.scaleLinear()
 
 function computeMonthlyGraphs() {
     allSVG = []; // all SVG in clusters.js
-
-
     for (var m = 0; m < numMonth; m++) {
         // Draw network snapshot
         updateSubLayout(m);
@@ -48,11 +46,9 @@ function computeMonthlyGraphs() {
 
 }
 
-
 var yScaleS = d3.scaleLinear()
     .range([0, 80])
     .domain([0, 1]);
-
 
 var areaAbove = d3.area()
    // .interpolate(interpolation)
@@ -117,10 +113,16 @@ var areaAbove2 = d3.area()
         return xStep + xScale(i);
     })
     .y0(function (d, i) {
-        return d.y;
+        if (MinMaxScaling)
+            return d.y+1 - (d.value-var1Min)*profileHeight*1.2/(var1Max-var1Min);
+        else
+            return d.y+1 - d.value*profileHeight*1.2/var1Max;
     })
     .y1(function (d, i) {
-        return d.y - d.value/10;
+        if (MinMaxScaling)
+            return d.y - (d.value-var1Min)*profileHeight*1.2/(var1Max-var1Min);
+        else
+            return d.y - d.value*profileHeight*1.2/var1Max;
     });
 
 
@@ -136,11 +138,11 @@ function drawgraph2() {
 }
 
 function drawCountryProfiles() {
-    yStart = yStartBoxplot + 120;//10 is for the margin
+    yStart = yStartBoxplot + 120;
     var yTemp2 = yStart;
     for (var c = 0; c < computes.length; c++) {
         computes[c].y = yTemp2;
-        yTemp2 += countryListYDistance;
+        yTemp2 += profileHeight;
     }
 
     //<editor-fold desc="TODO: This is enabled for the grid of the item profile only.">
@@ -474,7 +476,7 @@ function updateTextClouds() {
                 var sizeScale = d3.scaleLinear()
                     .range(textCloudRange)
                     .domain([0, maxAbs]);
-                return "4px";
+                return "2px";
             }
 
         })
@@ -488,52 +490,7 @@ function updateTimeSeries() {
     var brushingYear = lMonth;
     var orderby = d3.select('#nodeDropdown').property('value');
     var interval = d3.select('#edgeWeightDropdown').property('value');
-    countryListFiltered.sort(function (a, b) {
-        var maxOutlyingDif_A = 0;
-        var maxOutlyingDif_B = 0;
-        for (var i = brushingYear - numLens; i <= brushingYear + numLens; i++) {
-            if (0 < i && i <= dataS.YearsData.length) { // within the lensing interval
-                if (interval == 1 && i != brushingYear) {  //interval==1: Order by lensing year
-                    continue; // if users select brushing year to order 
-                }
-                if (orderby == 1) { // Order by outlier
-                    if (a[i].OutlyingDif < 0)
-                        maxOutlyingDif_A = Math.max(maxOutlyingDif_A, Math.abs(a[i].OutlyingDif));
-                    if (b[i].OutlyingDif < 0)
-                        maxOutlyingDif_B = Math.max(maxOutlyingDif_B, Math.abs(b[i].OutlyingDif));
-                } else if (orderby == 2) { // Order by inliers
-                    if (a[i].OutlyingDif > 0)
-                        maxOutlyingDif_A = Math.max(maxOutlyingDif_A, a[i].OutlyingDif);
-                    if (b[i].OutlyingDif > 0)
-                        maxOutlyingDif_B = Math.max(maxOutlyingDif_B, b[i].OutlyingDif);
-                } else if (orderby == 3) { // Order by
-                    maxOutlyingDif_A = Math.max(maxOutlyingDif_A, Math.abs(a[i].OutlyingDif));
-                    maxOutlyingDif_B = Math.max(maxOutlyingDif_B, Math.abs(b[i].OutlyingDif));
-                }
 
-            }
-        }
-        if (maxOutlyingDif_A < maxOutlyingDif_B)
-            return 1;
-        else if (maxOutlyingDif_A > maxOutlyingDif_B)
-            return -1;
-        else {
-            if (a.maxDifAbsolute < b.maxDifAbsolute)
-                return 1;
-            else if (a.maxDifAbsolute > b.maxDifAbsolute)
-                return -1;
-            return -1;
-        }
-
-    });
-
-    var yTemp2 = yStart;
-    for (var c = 0; c < countryListFiltered.length; c++) {
-        for (var y = 0; y < countryListFiltered[c].length; y++) {
-            countryListFiltered[c][y].y = yTemp2;
-        }
-        yTemp2 += countryListYDistance;
-    }
 
 
     svg.selectAll(".layerBelow").transition().duration(transitionTime)
@@ -558,9 +515,14 @@ function updateTimeSeries() {
         for (var j = 0; j < profiles[c].length; j++) {
             profiles[c][j].y = yTemp2;
         }
-        yTemp2 += countryListYDistance;
+        yTemp2 += profileHeight;
     }
 
+    var1Max = metaData.listOfMaxs[var1];
+    var1Min = metaData.listOfMins[var1];
+    if (!MinMaxScaling){
+        var1Min = 0;
+    }
     //********************************************
    if (profiles!= undefined){
         for (let c=0; c < computes.length; c++) {
@@ -576,7 +538,6 @@ function updateTimeSeries() {
 
         }
     }
-
 
 
     svg.selectAll(".layerTopAbove").transition().duration(transitionTime)

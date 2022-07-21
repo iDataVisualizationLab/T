@@ -130,82 +130,6 @@ function drawColorLegend() {
             else if (i == 1) return colorBelow;
             else return "#000";
         });
-
-    //drawTopEntities(text1);
-}
-
-// ******************************************Process top 100 entities array ******************************************
-//Called at the end of drawColorLegend()
-function drawTopEntities(text1) {
-    top100termsArray.sort(function (a, b) {
-        if (a.count < b.count) {
-            return 1;
-        }
-        if (a.count > b.count) {
-            return -1;
-        }
-        return 0;
-    });
-
-    var x6 = 4;
-    var y6 = 350;
-
-    svg.append("text")
-        .attr("class", "textTopEntities")
-        .attr("x", x6)
-        .attr("y", function (d, i) {
-            return y6;
-        })
-        .text(function (d) {
-            return "Top " + top100termsArray.length + " " + text1;
-        })
-        .attr("dy", ".21em")
-        .attr("font-family", "sans-serif")
-        .attr("font-size", "14px")
-        .style("text-anchor", "left")
-        .style("font-weight", "bold")
-        .style("fill", "#000");
-
-    var node6 = svg.selectAll(".node6Text")
-        .data(top100termsArray)
-        .enter()
-        .append("text")
-        .attr("class", "node6Text")
-        .attr("x", x6)
-        .attr("y", function (d, i) {
-            return y6 + 17 + i * 14;
-        })
-        .text(function (d) {
-            return d.term + " (" + numberWithCommas(d.count) + ")";
-        })
-        .attr("dy", ".21em")
-        .attr("font-family", "sans-serif")
-        .attr("font-size", "12px")
-        .style("text-anchor", "left")
-        .style("fill", function (d, i) {
-            return getColor3(d.category);
-        })
-        .on("mouseover", function (d) {
-            svg.selectAll(".node6Text")
-                .style("fill", function (d2) {
-                    if (d2.term == d.term) {
-                        return "#000";
-                    } else {
-                        return getColor3(d2.category);
-                    }
-                });
-        })
-        .on("mouseout", function (d) {
-            svg.selectAll(".node6Text")
-                .style("fill", function (d2) {
-                    return getColor3(d2.category);
-                });
-        })
-        .on("click", function (d) {
-            searchTerm = d.term;
-            recompute();
-        });
-    ;
 }
 
 
@@ -213,9 +137,7 @@ function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-function removeColorLegend() {
-    svg.selectAll(".nodeLegend").remove();
-}
+
 
 var listX;
 
@@ -281,7 +203,7 @@ function updateTimeLegend() {
 
     svg.selectAll(".timeLegendLine").data(listX).transition().duration(transitionTime)
         .style("stroke-dasharray", function (d, i){
-                return i % 5 == 0 ? "3, 1" : "1, 3"
+                return i % 12 == 0 ? "3, 1" : "1, 3"
         })
         .style("stroke-opacity",1)
         .attr("x1", function (d) {
@@ -324,24 +246,13 @@ function updateTimeLegend() {
 
 // Used in util.js and main.js *****************
 function getOpacity(d, i) {
-    if (fileName.indexOf("Political") >= 0) {
-        if (i % 12 == 0)
+    if (i % 12 == 0)
+        return 0.7;
+    else {
+        if (isLensing && lMonth - numLens <= i && i <= lMonth + numLens)
             return 1;
-        else {
-            if (isLensing && lMonth - numLens <= i && i <= lMonth + numLens)
-                return 1;
-            else
-                return 0;
-        }
-    } else {
-        if (i % 5 == 0)
-            return 1;
-        else {
-            if (isLensing && lMonth - numLens <= i && i <= lMonth + numLens)
-                return 1;
-            else
-                return 0;
-        }
+        else
+            return 0;
     }
 }
 
@@ -395,6 +306,15 @@ function clearLensing() {
     // Update layout
     updateTimeLegend();
     updateTimeBox();
+}
+
+function minMaxScaling() {
+    if (document.getElementById("checkboxMinMax").checked) {
+        MinMaxScaling =  true;
+    }
+    else{
+        MinMaxScaling =  false;
+    }
 }
 
 function autoLensing() {

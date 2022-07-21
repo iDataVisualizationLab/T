@@ -327,22 +327,13 @@ function drawTextClouds(yTextClouds) {
                     .range(lensedTextCloudRange)
                     .domain([0, maxAbs]);
                 return "12px";
-                //if (Math.abs(d[y + 1].OutlyingDif) < outlyingCut)
-                //    d.fontSize = 0;
-                //else
-                //    d.fontSize = sizeScale(Math.abs(d[y + 1].OutlyingDif));
             }
             else {
                 var sizeScale = d3.scaleLinear()
                     .range(textCloudRange)
                     .domain([0, maxAbs]);
-                return "4px";
-                //if (Math.abs(d[y + 1].OutlyingDif) < outlyingCut * 2)
-                //    d.fontSize = 0;
-                //else
-                //    d.fontSize = sizeScale(Math.abs(d[y + 1].OutlyingDif));
+                return "2px";
             }
-
         })
         .style("fill", function (d, i) {
             return "#000";

@@ -17,6 +17,10 @@ var metaData = new Object();
 var computes = [];
 var var1 = 8;  // 8=PowerMetrics
 var var2 = 12; // 12=memoryusage
+var var1Max = 1; // Max value of the selected variable
+var var1Min = 1; // Min value of the selected variable
+var MinMaxScaling = true;
+
 
 //Append a SVG to the body of the html page. Assign this SVG as an object to svg
 var svg = d3.select("body").append("svg")
@@ -29,7 +33,7 @@ var xStep = 210;
 var searchTerm;
 
 var isLensing;
-var lensingMul = 8;
+var lensingMul = 22;
 var lMonth;
 var oldLmonth; // use this variable to compare if we are lensing over a different month
 
@@ -48,12 +52,12 @@ function xScale(m) {
         if (m < lMonth - numLens) {
             var xx = m * xGap;
             if (m == lMonth - numLens - 1)
-                xx += xGap;
+                xx += xGap*4;
             return xx;
         } else if (m > lMonth + numLens) {
             var xx = maxM * xGap + numMonthInLense * xGap * lensingMul + (m - (lMonth + numLens + 1)) * xGap;
             if (m == lMonth + numLens + 1)
-                xx -= xGap;
+                xx -= xGap*4;
             return xx;
         } else {
             return maxM * xGap + (m - maxM) * xGap * lensingMul;
@@ -119,19 +123,14 @@ var processedData = {
 };
 
 var timeSteps = {
-    // "UnemploymentRate": {minTime: 1960, maxTime: 2015, type: "year"},
     "UnemploymentRate": {minTime: 1965, maxTime: 1985, type: "year"},//TODO: Change this For Customized Scatterplots due to missing data for this dataset.
     "LifeExpectancy263": {minTime: 1960, maxTime: 2015, type: "year"},
-    // "LifeExpectancy263":  {minTime: 1970, maxTime: 2002, type: "year"},//TODO: Change this for Life Expectancey from 1970 or above (filtered out first 10 years) and before 2002 (remove last 13 years)
     "PrevalenceOfHIV": {minTime: 1990, maxTime: 2015, type: "year"},
     "NYSEPriceVsVolume": {minTime: 1, maxTime: 84, type: "month"},
     "InternationalDebtData": {minTime: 1970, maxTime: 2022, type: "year"},
     "WorldTerrorism": {minTime: 1970, maxTime: 2017, type: "year"},
     "USUnEmpRateMenVsWomen": {minTime: 1999, maxTime: 2017, type: "year"},
     "USEmpRGoodVsService": {minTime: 0, maxTime: 223, type: "month"},
-    // "USEmpRGoodVsService":  {minTime:185 , maxTime: 223, type: "month"},//TODO: Change this For Florida Irma
-    // "USEmpRGoodVsService":  {minTime:40 , maxTime: 80, type: "month"},//TODO: Change this For Luisiana Katrina
-    // "USEmpRGoodVsService":  {minTime:205 , maxTime: 220, type: "month"},//TODO: Change this For Customized Scatterplots
     "HPCCTempVsFan": {minTime: 1, maxTime: 18, type: "quarter"},
     "HPCC_04Oct": {minTime: 0, maxTime: 32, type: "quarter"},
 };
@@ -161,7 +160,7 @@ drawControlPanel();
 
 function loadData() {
    // d3.json("data/" + fileName + ".json", function (data_) {
-    d3.json("data2/nocona_24h.json", function (data_) {
+    d3.json("data/nocona_24h.json", function (data_) {
         spinner.spin(target);
         dataS= data_;
 
@@ -247,11 +246,6 @@ function loadData() {
             metaData.listOfMaxs_Net.push(max);
         }
 
-
-
-
-
-
         drawData2(data_)    ;
 
         function drawData2(data_) {
@@ -263,7 +257,7 @@ function loadData() {
                 .attr("width", width)
                 .attr("height", heightSVG);
 
-            numMonth = dataS.time_stamp.length/3;
+            numMonth = dataS.time_stamp.length;
             XGAP_ = (width - xStep - 2) / numMonth; // gap between months on xAxis
 
             drawColorLegend();
@@ -274,13 +268,9 @@ function loadData() {
             // Spinner Stop ********************************************************************
             spinner.stop();
 
-
             // 2017, this function is main2.js
             computeMonthlyGraphs();
         }
-
-
-
 
         function drawData(dataS) {
             searchTerm = "";
@@ -288,13 +278,11 @@ function loadData() {
             oldLmonth = -1000;
             lMonth = -lensingMul * 2;
 
-
             minYear = timeSteps[fileName].minTime;
             maxYear = timeSteps[fileName].maxTime;
 
             numMonth = maxYear - minYear + 1;
             XGAP_ = (width - xStep - 2) / numMonth; // gap between months on xAxis
-
 
             svg.append("rect")
                 .attr("class", "background")
