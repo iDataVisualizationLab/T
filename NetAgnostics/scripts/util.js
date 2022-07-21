@@ -163,9 +163,7 @@ function drawTimeText() {
         .attr("x", function (d) {
             return d.x;
         })
-        .attr("y", function (d, i) {
-            return height - 15;
-        })
+        .attr("y", 21)
         .attr("dy", ".21em")
         .attr("font-family", "sans-serif")
         .attr("font-size", "15px")
@@ -242,10 +240,8 @@ function drawTimeBox() {
         .attr("x", xStep-38)
         .attr("y",21)
         .attr("font-family", "sans-serif")
-        .attr("font-size", "14px")
-       // .style("text-align", "right")
-       // .style("font-weight", "bold")
-        .style("fill", "#000")
+        .attr("font-size", "15px")
+        .style("fill", "#777")
         .text("Time");
 
     svg.append("rect")
@@ -279,6 +275,12 @@ function updateTimeBox() {
         .attr("x", function (d, i) {
             return d.x;
         })
+        .style("font-weight", function (d, i) {
+            if (i== lensingTimeStep)
+                return "bold";
+            else
+                return "normal";
+        });
     ;
     // Recompute the timeArcs
     if (oldLmonth != lensingTimeStep) {
@@ -299,9 +301,11 @@ function clearLensing() {
 function minMaxScaling() {
     if (document.getElementById("checkboxMinMax").checked) {
         MinMaxScaling =  true;
+        updategraph2();
     }
     else{
         MinMaxScaling =  false;
+        updategraph2();
     }
 }
 
@@ -346,6 +350,8 @@ function showScore() {
 // Control panel on the left *********************
 var optionsPrimary;
 var optionsSecondary;
+var optionsRanking;
+
 function addVariable_to_dropdown() {
     //  List Dropdown *********************
     var listOptions = [];
@@ -369,4 +375,14 @@ function addVariable_to_dropdown() {
         return d.value;
     })
     optionsSecondary._groups[0][var2].selected = true;
+
+    // Ranking and Ordering dopdown
+    var listForRanking = [{"id": 1, "value": "By Primary Variable"}, {"id": 2, "value": "By Primary NetChange"}];
+    var selectRanking  = d3.select('#rankingAndColoring').on('change', updategraph2)
+    optionsRanking = selectRanking .selectAll('option').data(listForRanking).enter().append('option').attr('value', function (d) {
+        return d.id;
+    }).text(function (d) {
+        return d.value;
+    })
+    optionsRanking._groups[0][0].selected = true;
 }

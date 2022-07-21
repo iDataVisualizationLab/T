@@ -39,7 +39,6 @@ function drawBoxplot() {
     boxplotNodes = [];
     for (var t = 0; t < numMonth; t++) {
         var nodes = [];
-
         var obj = {};
         obj.sumAbove = 0;
         obj.sumBelow = 0;
@@ -58,7 +57,6 @@ function drawBoxplot() {
                 }
             }
         }
-
         for (var c = 0; c < computes.length; c++) {
             if (computes[c][measureName]!=undefined)
                 nodes.push(computes[c]);
@@ -73,7 +71,6 @@ function drawBoxplot() {
             else
                 return 0;
         });
-
         if (obj.countAbove > 0)
             obj.averageAbove = obj.sumAbove / obj.countAbove;
         else
@@ -88,8 +85,6 @@ function drawBoxplot() {
         obj.maxAboveCountry = nodes[0];
         obj.maxBelowCountry = nodes[nodes.length - 1];
         boxplotNodes.push(obj);
-      //  debugger
-
     }
 
     maxAbs = 0;
@@ -123,15 +118,12 @@ function drawBoxplot() {
     function yBoxPlotGrid(d){
         return d.value<0?hBoxplotScale(-d.value): -hBoxplotScale(d.value);
     }
-
     enter.append("line").attr("x1", xStep-25).attr("y1", yBoxPlotGrid).attr("x2", +svg.attr("width")).attr("y2", yBoxPlotGrid)
         .attr("class", "timeLegendLine")
         .style("stroke", "#000")
         .style("stroke-opacity", 1)
         .style("stroke-width", 0.3)
-        .style("stroke-dasharray", "3, 1");
-
-
+        .style("stroke-dasharray", "3, 1")
     enter.append("text").attr("x", xStep-25-5).attr("y", yBoxPlotGrid)
         .attr("alignment-baseline", "middle")
         .attr("class", "boxPlotTickLabel")
@@ -159,7 +151,6 @@ function drawBoxplot() {
         .style("fill", colorBelow)
         .attr("d", areaTopBelow(boxplotNodes));
 
-
     svg.selectAll(".boxplotLine").remove();
     svg.selectAll(".boxplotLine")
         .data(boxplotNodes).enter()
@@ -180,7 +171,6 @@ function drawBoxplot() {
         .attr("y2", function (d, i) {
             return yStartBoxplot - hBoxplotScale(d.maxAbove);
         });
-
 
     svg.selectAll(".boxplotLineAbove").remove();
     svg.selectAll(".boxplotLineAbove")
@@ -223,8 +213,6 @@ function drawBoxplot() {
         .attr("y2", function (d, i) {
             return yStartBoxplot - hBoxplotScale(d.maxBelow);
         });
-
-
     svg.selectAll(".boxplotRectAbove").remove();
     svg.selectAll(".boxplotRectAbove")
         .data(boxplotNodes).enter()
@@ -263,8 +251,6 @@ function drawBoxplot() {
             return hBoxplotScale(Math.abs(d.averageBelow));
         })
         .attr("width", XGAP_ / 4);
-
-
 }
 
 // This Texts is independent from the lower text with stream graphs
