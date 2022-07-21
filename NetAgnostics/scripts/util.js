@@ -347,7 +347,7 @@ function addVariable_to_dropdown() {
     }).text(function (d) {
         return d.value;
     })
-    Orderoptions.property("selected",metaData.listOfVariables[9]);
+    Orderoptions.attr("selected",metaData.listOfVariables[2]);
     
 
     //  Secondary Dropdown *********************
@@ -357,5 +357,5 @@ function addVariable_to_dropdown() {
     }).text(function (d) {
         return d.value;
     })
-    select.property("selected",8);
+    options.attr("selected",8);
 }
