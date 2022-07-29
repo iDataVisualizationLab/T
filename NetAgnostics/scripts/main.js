@@ -216,14 +216,10 @@ function loadData() {
 
         // Spinner Stop ********************************************************************
         spinner.stop();
-
-
         computeMonthlyGraphs();    // this function is main2.js
-
         addVariable_to_dropdown();  // In util.js
     });
 }
-
 
 $('#btnUpload').click(function () {
     var bar = document.getElementById('progBar'),

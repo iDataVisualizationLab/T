@@ -301,11 +301,11 @@ function clearLensing() {
 function minMaxScaling() {
     if (document.getElementById("checkboxMinMax").checked) {
         MinMaxScaling =  true;
-        updategraph2();
+        updateProfiles();
     }
     else{
         MinMaxScaling =  false;
-        updategraph2();
+        updateProfiles();
     }
 }
 
