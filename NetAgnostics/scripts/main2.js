@@ -18,7 +18,7 @@ var yStartBoxplot;
 var yTextClouds;
 var boxHeight = 75;
 var textCloudHeight = 75;
-var transitionTime = 2000;
+var transitionTime = 1000;
 var countryList = [];
 var countryListFiltered = [];
 var profileHeight = 20;//we changed this to increase the country list distance.
@@ -58,22 +58,22 @@ var yScaleS = d3.scaleLinear()
 
 // 2022 new function  **************************************************
 var profiles =[]; // entries profiles
-var areaAbove2 = d3.area()
+var lineChart = d3.line()
     .x(function (d, i) {
         return xStep + xScale(i);
     })
-    .y0(function (d, i) {
+    .y(function (d, i) {
         if (MinMaxScaling)
-            return d.y+1 - (d.value-var1Min)*profileHeight*1.2/(var1Max-var1Min);
+            return 1 - (d.value-var1Min)*profileHeight*1.2/(var1Max-var1Min);
         else
-            return d.y+1 - d.value*profileHeight*1.2/var1Max;
-    })
-    .y1(function (d, i) {
-        if (MinMaxScaling)
-            return d.y - (d.value-var1Min)*profileHeight*1.2/(var1Max-var1Min);
-        else
-            return d.y - d.value*profileHeight*1.2/var1Max;
+            return 1 - d.value*profileHeight*1.2/var1Max;
     });
+    //.y1(function (d, i) {
+    //    if (MinMaxScaling)
+    //        return d.y - (d.value-var1Min)*profileHeight/(var1Max-var1Min);
+    //    else
+    //        return d.y - d.value*profileHeight/var1Max;
+    //});
 var areaTopAbove = d3.area()
     // .interpolate(interpolation)
     .x(function (d, i) {
@@ -414,8 +414,9 @@ function drawProfiles() {
                 var obj= new Object();
                 obj.value = computes[c][varName1][i];
                 obj.net = computes[c][varName1+"_Net"][i];
-                obj.y = computes[c].y;   /// IMPROVE
-                obj.name = computes[c].name;
+            //  obj.y = computes[c].y;   /// IMPROVE
+                if (i==0)
+                    obj.name = computes[c].name;
                 pro.push(obj);
             }
             profiles.push(pro)
@@ -427,7 +428,7 @@ function drawProfiles() {
                 .style("stroke-width", 1)
                 .style("stroke-opacity", 0.5)
                 .style("fill-opacity", 0.2)
-                .style("fill", colorAbove);
+                .style("fill", "#f00");
         }
     }
     svg.selectAll(".profileText").remove();
@@ -627,30 +628,31 @@ function updateProfiles() {
                 return -1;
         });
     }
-    var yTemp2 = yStart;
-    for (var c = 0; c < profiles.length; c++) {
-        for (var j = 0; j < profiles[c].length; j++) {
-            profiles[c][j].y = yTemp2;
-        }
-        yTemp2 += profileHeight;
-    }
+    //var yTemp2 = yStart;
+    //for (var c = 0; c < profiles.length; c++) {
+        //for (var j = 0; j < profiles[c].length; j++) {
+        //    profiles[c][j].y = yTemp2;
+    //    }
+    //    yTemp2 += profileHeight;
+    //}
 
     var1Max = metaData.listOfMaxs[var1];
     var1Min = metaData.listOfMins[var1];
     if (!MinMaxScaling){
         var1Min = 0;
     }
+
     //********************************************
    if (profiles!= undefined){
         for (let c=0; c < computes.length; c++) {
             if (profiles[c]!= undefined) {
-                var pName = ".layerProfile" + profiles[c][0].name;
-                svg.selectAll(pName).transition().duration(transitionTime)
-                    .attr("d", areaAbove2(profiles[c]));
+                svg.selectAll(".layerProfile" + computes[c].name).transition().duration(transitionTime)
+                    .attr("d", lineChart(profiles[c]))
+                    .attr("transform", "translate(0," + computes[c].y + ")");
                 svg.selectAll(".profileText"+profiles[c][0].name).transition().duration(transitionTime)
                     .attr("y", function (d, i) {
-                        return profiles[c][0].y;     // Copy node y coordinate
-                    })
+                        return computes[c].y;     // Copy node y coordinate
+                    });
             }
 
         }
