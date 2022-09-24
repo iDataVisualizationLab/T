@@ -100,18 +100,30 @@ var areaTopBelow = d3.area()
 function drawgraph2() {
     //** TEXT CLOUD **********************************************************
     yTextClouds = height + boxHeight; // 75 is the height of the text cloud section.
-    drawTextClouds(yTextClouds);    // in main3.js
+    drawTextClouds(yTextClouds);   
     //** BOX PLOT **********************************************************
-    drawBoxplot();   // in main3.js
+    drawBoxplot();   
     //** COUNTRY PROFILE **********************************************************
     drawProfiles();
 }
 
 
-function redoProfiles() {
+function changeVarPrimary() {
+    var1  = d3.select("#varPrimary").node().value-1;
+
+    allSVG = []; // all SVG in clusters.js
+    for (var m = 0; m < numMonth; m++) {
+        // Draw network snapshot
+        updateScatterplots(m);
+    }
+    oldLmonth = -100;  // 
+
     drawTextClouds(yTextClouds);
     updateTextClouds();
-    
+
+    drawBoxplot();   // in main3.js
+    updateBoxplots();
+
     drawProfiles();
     updateProfiles();
 }
@@ -157,22 +169,14 @@ function drawTextClouds(yTextClouds) {
 
             var y = Math.floor(i / numTermsWordCloud);
             if (lensingTimeStep - numLens <= y && y <= lensingTimeStep + numLens) {
-                var sizeScale = d3.scale.linear()
-                    .range(lensedTextCloudRange)
-                    .domain([0, maxAbs]);
                 return "12px";
             }
             else {
-                var sizeScale = d3.scaleLinear()
-                    .range(textCloudRange)
-                    .domain([0, maxAbs]);
-                return "2px";
+                 return "2px";
             }
         })
         .style("fill", function (d, i) {
             return "#000";
-            //var y = Math.floor(i / numTermsWordCloud);
-            //return colorPurpleGreen(d[y + 1].OutlyingDif);
         })
         .attr("x", function (d, i) {
             return xStep + xScale(Math.floor(i / numTermsWordCloud));    // x position is at the arcs

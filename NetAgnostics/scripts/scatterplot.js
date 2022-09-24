@@ -60,7 +60,11 @@ function updateScatterplots(m) {
         .style("stroke", "#000")
         .style("stroke-width", 0.1);
 
+
+
     var dataPoints = [];
+
+    /*
     for (var key in dataS.nodes_info){
         var obj = {};
         obj.year = m;
@@ -74,7 +78,7 @@ function updateScatterplots(m) {
         dataPoints.push(obj);
     }
 
-    /*svg2.selectAll("circle")
+    svg2.selectAll("circle")
         .data(computes)
         .enter().append("circle")
         .attr("class", function (d, i) {
