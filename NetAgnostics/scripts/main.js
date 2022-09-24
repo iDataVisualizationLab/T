@@ -15,7 +15,7 @@ var heightSVG = 2500;
 var dataS;
 var metaData = new Object();
 var computes = [];
-var var1 = 8;  // 8=PowerMetrics
+var var1 = 1;  // 8=PowerMetrics
 var var2 = 12; // 12=memoryusage
 var var1Max = 1; // Max value of the selected variable
 var var1Min = 1; // Min value of the selected variable

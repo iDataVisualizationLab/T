@@ -107,6 +107,16 @@ function drawgraph2() {
     drawProfiles();
 }
 
+
+function redoProfiles() {
+    drawTextClouds(yTextClouds);
+    updateTextClouds();
+    
+    drawProfiles();
+    updateProfiles();
+}
+
+
 // This Texts is independent from the lower text with stream graphs
 var tNodes;
 let lensedTextCloudRange = [10, 16];
@@ -402,7 +412,6 @@ function drawProfiles() {
         yTemp2 += profileHeight;
     }
 
-  //  var varName1 = metaData.listOfVariables[var1];
     var varName1 = metaData.listOfVariables[var1];
 
     svg.selectAll(".layerProfile").remove();
@@ -628,13 +637,6 @@ function updateProfiles() {
                 return -1;
         });
     }
-    //var yTemp2 = yStart;
-    //for (var c = 0; c < profiles.length; c++) {
-        //for (var j = 0; j < profiles[c].length; j++) {
-        //    profiles[c][j].y = yTemp2;
-    //    }
-    //    yTemp2 += profileHeight;
-    //}
 
     var1Max = metaData.listOfMaxs[var1];
     var1Min = metaData.listOfMins[var1];

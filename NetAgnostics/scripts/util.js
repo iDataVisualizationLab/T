@@ -359,7 +359,7 @@ function addVariable_to_dropdown() {
         var opt = {"id": v+1, "value": metaData.listOfVariables[v]};
         listOptions.push(opt);
     }
-    var selectOrder = d3.select('#varPrimary').on('change', updategraph2);
+    var selectOrder = d3.select('#varPrimary').on('change', redoProfiles);
     optionsPrimary = selectOrder.selectAll('option').data(listOptions).enter().append('option').attr('value', function (d) {
         return d.id;
     }).text(function (d) {

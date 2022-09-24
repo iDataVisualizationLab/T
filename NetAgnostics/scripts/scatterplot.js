@@ -74,7 +74,7 @@ function updateScatterplots(m) {
         dataPoints.push(obj);
     }
 
-    svg2.selectAll("circle")
+    /*svg2.selectAll("circle")
         .data(computes)
         .enter().append("circle")
         .attr("class", function (d, i) {
@@ -122,6 +122,6 @@ function updateScatterplots(m) {
         })
         .on("mouseout", function (d) {
             hideTip(d);
-        });
+        });*/
     setExploreEvent(svg2, dataPoints, dataS.Variables);
 }
