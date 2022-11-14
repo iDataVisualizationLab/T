@@ -9,6 +9,7 @@ import geo from "./data/worldcities.csv"
 import ttulogo from "./cat.jpeg"
 import SpaceDust from "./Components/SpaceDust"
 
+
 // [{ lat: 19.6, lng: 80, altitude: 0.6 },{ lat: 50, lng: 60, altitude: 0.4 },{ lat: 31.3037101, lng: -89.29276214, altitude: 0.4 },{ lat: 33.5842591, lng: -101.8804709, altitude: 0.6 }]
 // const MAP_CENTERs = [{ lat: 87.5842591, lng: -70.8804709, altitude: 1.8 }];
 const MAP_CENTERs = [{ lat: 19.6, lng: 90, altitude: 0.8 },{ lat: 51.58421865, lng: 13.1910, altitude: 0.4 },{ lat: -22.9009, lng: -47.0573, altitude: 0.4 }, {lat: 38, lng: -88.29276214, altitude: 0.6 }
