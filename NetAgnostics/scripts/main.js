@@ -110,7 +110,9 @@ loadData();
 
 function loadData() {
    // d3.json("data/" + fileName + ".json", function (data_) {
-    d3.json("data/nocona_24h.json", function (data_) {
+   //  d3.json("data/nocona_24h.json", function (data_) {
+   //  d3.json("data/nocona_2023-01-12T12-00-00.00Z-2023-01-19T12-00-00.00Z.json", function (data_) {
+    d3.json("data/nocona_2023-02-11_updated.json", function (data_) {
         spinner.spin(target);
         dataS= data_;
 
