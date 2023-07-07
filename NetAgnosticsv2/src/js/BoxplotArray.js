@@ -20,11 +20,16 @@ let BoxplotArray = function ({
             master.el = container.append('g')
                 .attr('class','boxplotArrayHolder');
         }
-        if (master.el.select('layerTopAbove').empty()){
+        master.grid = master.el.select('.grid');
+        if (master.grid.empty()){
+            master.grid = master.el.append('g')
+                .attr('class','.grid');
+        }
+        if (master.el.select('.layerTopAbove').empty()){
             master.el.append('path')
                 .attr('class','layerTopAbove');
         }
-        if (master.el.select('layerTopBelow').empty()){
+        if (master.el.select('.layerTopBelow').empty()){
             master.el.append('path')
                 .attr('class','layerTopBelow');
         }
@@ -37,8 +42,16 @@ let BoxplotArray = function ({
             data
         } = graphicopt;
 
-        const scaleY = d3.scaleLinear().domain([0, d3.max(data,d=>Math.max(d.maxAbove,Math.abs(d.maxBelow)))])
+        let boxPlotMaxAbove = d3.max(data,d=>d.maxAbove);
+        let boxPlotMaxBelow = d3.min(data,d=>d.maxBelow);
+
+        const scaleY = d3.scaleLinear().domain([0, Math.max(boxPlotMaxAbove,Math.abs(boxPlotMaxBelow))])
                 .range([1, height]);
+
+        let boxPlotGridData = [];
+        boxPlotGridData.push({"value": boxPlotMaxAbove.toFixed(2),y:-scaleY(boxPlotMaxAbove)});
+        boxPlotGridData.push({"value": 0,y:0});
+        boxPlotGridData.push({"value": boxPlotMaxBelow.toFixed(2),y:-scaleY(boxPlotMaxBelow)});
 
         const areaTopAbove = d3.area()
                 .x(d=>scaleX(d.timestep))
@@ -102,6 +115,25 @@ let BoxplotArray = function ({
             );
         master.el.select('path.layerTopAbove').attr('d',areaTopAbove(data));
         master.el.select('path.layerTopBelow').attr('d',areaTopBelow(data));
+
+        const wrange = scaleX.range()
+        master.grid.selectAll('line').data(boxPlotGridData)
+            .join('line')
+            .attr('x1',wrange[0]-15)
+            .attr('x2',wrange[1])
+            .attr('y1',d=>d.y)
+            .attr('y2',d=>d.y)
+            .style("stroke", "#000")
+            .style("stroke-opacity", 1)
+            .style("stroke-width", 0.3)
+            .style("stroke-dasharray", "3, 1")
+        master.grid.selectAll('text').data(boxPlotGridData)
+            .join('text')
+            .attr('x',wrange[0]-17)
+            .attr('dy','0.5rem')
+            .attr('y',d=>d.y)
+            .attr('text-anchor','end')
+            .text(d=>d.value)
     }
 
     Object.keys(graphicopt).forEach(k=>{

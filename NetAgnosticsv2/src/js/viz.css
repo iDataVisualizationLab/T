@@ -1,5 +1,5 @@
 svg * {
-    transition: all 0.5s;
+    transition: all 1s;
 }
 svg text {
     font-size: 12px;

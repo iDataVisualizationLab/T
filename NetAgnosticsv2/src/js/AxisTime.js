@@ -34,6 +34,13 @@ let AxisTime = function ({width,height,margin={},
                 .attr('class','holder');
             master.holder.append('rect')
                 .attr('class','background');
+            master.holder.append('text')
+                .attr('class','title')
+                .attr('text-anchor','end')
+                .text('Time')
+                .attr('x',-40)
+                .attr('y',-10)
+            ;
         }
 
         master.holder.attr('transform',`translate(${margin.left??0},${margin.top??0})`);
@@ -90,8 +97,8 @@ let AxisTime = function ({width,height,margin={},
                         .attr('class', 'timeticksline')
                         .attr('y1', gridHeight)
                         .attr('stroke', 'currentColor')
-                        .attr('stroke-dasharray', '4 2')
-                        .attr('stroke-width', 0.5);
+                        .attr('stroke-dasharray', '3 1')
+                        .attr('stroke-width', 0.3);
                     return g;
                 },
                 update => {
@@ -104,8 +111,8 @@ let AxisTime = function ({width,height,margin={},
                         .select("line.timeticksline")
                         .attr('y1', gridHeight)
                         .attr('stroke', 'currentColor')
-                        .attr('stroke-dasharray', '4 2')
-                        .attr('stroke-width', 0.5);
+                        .attr('stroke-dasharray', '3 1')
+                        .attr('stroke-width', 0.3);
                     return g;
                 }
             );
@@ -127,8 +134,8 @@ let AxisTime = function ({width,height,margin={},
                         .attr('class', 'timeticksline')
                         .attr('y1', gridHeight)
                         .attr('stroke', 'currentColor')
-                        .attr('stroke-dasharray', '4 2')
-                        .attr('stroke-width', 0.5);
+                        .attr('stroke-dasharray', '1 3')
+                        .attr('stroke-width', 0.3);
                     return g;
                 },
                 update => {
@@ -142,8 +149,8 @@ let AxisTime = function ({width,height,margin={},
                         .select("line.timeticksline")
                         .attr('y1', gridHeight)
                         .attr('stroke', 'currentColor')
-                        .attr('stroke-dasharray', '4 2')
-                        .attr('stroke-width', 0.5);
+                        .attr('stroke-dasharray', '1 3')
+                        .attr('stroke-width', 0.3);
                     return g;
                 }
             );
