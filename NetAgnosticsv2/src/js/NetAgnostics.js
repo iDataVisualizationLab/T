@@ -1,6 +1,5 @@
 let NetAgnostics = function () {
     let master = {};
-    let simulations;
     const NUMTEXTCLOUD = 6;
     const FONTSIZE = 12;
     let graphicopt = {
@@ -196,6 +195,7 @@ let NetAgnostics = function () {
             yDomain
         }).draw();
 
+        onFinishDraw.forEach(d=>d({}));
     }
 
     function orderStream(){
@@ -401,6 +401,11 @@ let NetAgnostics = function () {
         }
     }
 
+    master.onFinishDraw = function(_data) {
+        onFinishDraw.push(_data)
+        return master;
+    };
+
     master.data = function(_data) {
         if ( arguments.length){
             Object.keys(_data).forEach(k=>{
@@ -418,6 +423,12 @@ let NetAgnostics = function () {
             return master;
         }else
             return graphicopt;
+    };
+
+    master.colorNet = function (_data) {
+        return arguments.length ? (graphicopt.colorNet = _data ? _data : function () {
+            return graphicopt.colorNet
+        }, master) : graphicopt.colorNet;
     };
 
     master.getColorScale = function (_data) {

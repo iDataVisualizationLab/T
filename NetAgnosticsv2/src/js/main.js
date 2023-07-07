@@ -78,20 +78,22 @@ function initTimeElement(){
     if (request.isRealTime) {
         request.onFinishQuery.push((d)=>(updateProcess(),d));
         request.setInterval(120000);
-        request.onFinishQuery.push((data)=> {handleRankingData(data);queryData(data);drawUserList();});
+        request.onFinishQuery.push((data)=> {queryData(data);
+            // drawUserList();
+        });
         //queryLayout().then(()=>timelineControl.play.bind(timelineControl)());
     }else{
        // request.setInterval(1000);
-        request.onFinishQuery.push((data)=>{queryData(data);
-            debugger
+        request.onFinishQuery.push((data)=>{
+
             serviceControl();});
         request.onDataChange.push((data)=> queryLayout().then(()=>{
             updateProcess({percentage:50,text:'Preprocess data'})
             setTimeout(()=>{
-                handleRankingData(data);
+                queryData(data);
                 serviceControl();
                 updateProcess({percentage:80,text:'Preprocess data'})
-                drawUserList();
+                // drawUserList();
                 // drawPara();
                 // initdrawGantt();
                 drawGantt();
@@ -101,5 +103,5 @@ function initTimeElement(){
             },0);
         }));
     }
-    // request.onDataChange.push((data)=> queryLayout().then(()=>handleRankingData(data)).then(drawUserList).then(()=>timelineControl.play.bind(timelineControl)()));
+    // request.onDataChange.push((data)=> queryLayout().then(()=>queryData(data)).then(drawUserList).then(()=>timelineControl.play.bind(timelineControl)()));
 }

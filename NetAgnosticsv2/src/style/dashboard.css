@@ -65,6 +65,11 @@ main {
     width: 100%;
     transition: margin 1s;
 }
+
+main.no-nav {
+    margin-left:0;
+}
+
 .ui-draggable .card-header {
     padding: .5rem 0.25rem;
 }
@@ -87,6 +92,12 @@ main {
 }
 .no-padding {
     padding: 0!important;
+}
+.no-padding-top {
+    padding-top: 0!important;
+}
+.no-padding-bottom {
+    padding-bottom: 0!important;
 }
 .card .row,.card-body.row {
     margin-left: 0;
