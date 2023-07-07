@@ -203,7 +203,7 @@ let NetAgnostics = function () {
             master.draw();
         }
     }
-    
+
     master.clearlensing = ()=>{
         lensingTarget = undefined;
         master.draw();
