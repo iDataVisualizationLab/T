@@ -89,7 +89,7 @@ let NetAgnostics = function () {
 
         contentCollections.textCloud = g.append('g')
             .attr('class','textCloudHolder')
-            .attr("transform",`translate(0,${30+FONTSIZE*NUMTEXTCLOUD})`);
+            .attr("transform",`translate(0,${15+FONTSIZE*NUMTEXTCLOUD})`);
 
         contentCollections.boxplotArray = g.append('g')
             .attr('class','boxplotArrayHolder')
@@ -97,7 +97,7 @@ let NetAgnostics = function () {
 
         contentCollections.streamArray = g.append('g')
             .attr('class','streamArrayHolder')
-            .attr("transform",`translate(0,${30+FONTSIZE*NUMTEXTCLOUD+200})`);
+            .attr("transform",`translate(0,${30+FONTSIZE*NUMTEXTCLOUD+230})`);
 
         drawAxisTime = AxisTime({
             width: graphicopt.width,
@@ -202,6 +202,11 @@ let NetAgnostics = function () {
             lensingTarget = undefined;
             master.draw();
         }
+    }
+    
+    master.clearlensing = ()=>{
+        lensingTarget = undefined;
+        master.draw();
     }
 
     function orderStream(){

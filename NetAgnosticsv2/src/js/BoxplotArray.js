@@ -116,11 +116,12 @@ let BoxplotArray = function ({
         master.el.select('path.layerTopAbove').attr('d',areaTopAbove(data));
         master.el.select('path.layerTopBelow').attr('d',areaTopBelow(data));
 
-        const wrange = scaleX.range()
+        const wrange = scaleX.range();
+
         master.grid.selectAll('line').data(boxPlotGridData)
             .join('line')
             .attr('x1',wrange[0]-15)
-            .attr('x2',wrange[1])
+            .attr('x2',wrange[wrange.length-1])
             .attr('y1',d=>d.y)
             .attr('y2',d=>d.y)
             .style("stroke", "#000")

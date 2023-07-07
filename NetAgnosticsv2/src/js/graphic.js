@@ -164,7 +164,12 @@ function initdraw() {
         .attr('checked',drawObject.autolensing())
         .on('change',function(){
         drawObject.autolensing(this.checked)
+            d3.select('#clearLensing').classed('hide',!this.checked)
     })
+    d3.select('#clearLensing')
+        .on('click',function(){
+            drawObject.clearlensing()
+        })
     d3.select('#showScore').on('change',function(){
 
     })
