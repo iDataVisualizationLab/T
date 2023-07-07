@@ -160,8 +160,10 @@ function initdraw() {
     d3.select('#minMaxScale').on('change',function(){
 
     })
-    d3.select('#enableLensing').on('change',function(){
-
+    d3.select('#enableLensing')
+        .attr('checked',drawObject.autolensing())
+        .on('change',function(){
+        drawObject.autolensing(this.checked)
     })
     d3.select('#showScore').on('change',function(){
 

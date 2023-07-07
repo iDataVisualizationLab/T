@@ -31,8 +31,7 @@ let NetAgnostics = function () {
             return this.margin.top + this.heightG() / 2;
         },
         animationTime: 1000,
-        colorNet:initColorFunc
-
+        colorNet:initColorFunc,
     }
 
     let isFreeze = false;
@@ -196,6 +195,13 @@ let NetAgnostics = function () {
         }).draw();
 
         onFinishDraw.forEach(d=>d({}));
+    }
+
+    function handleLensing() {
+        if (!islensing){
+            lensingTarget = undefined;
+            master.draw();
+        }
     }
 
     function orderStream(){
@@ -439,6 +445,10 @@ let NetAgnostics = function () {
 
     master.service = function (_data) {
         return arguments.length ? (graphicopt.service = _data, master) : graphicopt.service;
+    };
+
+    master.autolensing = function (_data) {
+        return arguments.length ? (islensing = _data,handleLensing(), master) : islensing;
     };
 
 
