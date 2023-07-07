@@ -67,7 +67,7 @@ let BoxplotArray = function ({
                         .append("line")
                         .attr('class', 'boxplotLine')
                         .attr('y1', d=>-scaleY(d.maxAbove))
-                        .attr('y2', d=>-scaleY(d.averageAbove));
+                        .attr('y2', d=>-scaleY(d.maxBelow));
                     g
                         .append("rect")
                         .attr('class', 'boxplotRectAbove')
@@ -89,7 +89,7 @@ let BoxplotArray = function ({
                     g
                         .select("line.boxplotLine")
                         .attr('y1', d=>-scaleY(d.maxAbove))
-                        .attr('y2', d=>-scaleY(d.averageAbove));
+                        .attr('y2', d=>-scaleY(d.maxBelow));
                     g
                         .select("rect.boxplotRectAbove")
                         .attr('height', d=>scaleY(d.averageAbove))
