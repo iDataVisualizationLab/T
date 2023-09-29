@@ -35,8 +35,8 @@ $(document).ready(function(){
         }
         else {
             // set up ui
-            d3.select('#navMode').selectAll('li').classed('active',false);
-            d3.select('#navMode').select('li.demo a').classed('active',true);
+            // d3.select('#navMode').selectAll('li').classed('active',false);
+            // d3.select('#navMode').select('li.demo a').classed('active',true);
             // let url = 'src/data/nocona_2023-06-14T12-00-00.00Z-2023-06-21T12-00-00.00Z.json';
             let url = 'src/data/nocona_2023-04-13-2023-04-14.json';
             // let url = '../HiperView/data/814_821_2020.json';

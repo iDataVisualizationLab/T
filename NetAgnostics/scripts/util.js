@@ -332,6 +332,10 @@ function autoLensing() {
     }
 }
 
+function shareSpace() {
+    console.log("test")
+}
+
 function showScore() {
     if (document.getElementById("checkbox2").checked) {
         svg.selectAll(".maxAboveText").transition().duration(transitionTime)

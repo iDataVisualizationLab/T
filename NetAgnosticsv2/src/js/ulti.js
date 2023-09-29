@@ -262,6 +262,7 @@ function getUrl({_start,_end,interval,value,compress}){
 }
 
 function preadjustdata(_data){
+    console.log(_data)
     if (_data.jobs_info && _data.jobs_info["base64(zip(o))"]){
         Object.keys(_data).forEach(k=>{
             if (_data[k]["base64(zip(o))"]){

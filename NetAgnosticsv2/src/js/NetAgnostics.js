@@ -376,6 +376,9 @@ let NetAgnostics = function () {
         debugger
         // adjust height
         graphicopt.height = Math.max($(graphicopt.maindiv).height(),30+FONTSIZE*NUMTEXTCLOUD+200+streamData.length*streamH);
+        if (isShareSpace()) {
+            graphicopt.height = Math.max($(graphicopt.maindiv).height(),30+FONTSIZE*NUMTEXTCLOUD+200+10*streamH);                                
+        } 
         contentCollections.main_svg.attr("height", graphicopt.height-graphicopt.margin.top);
         drawAxisTime.gridHeight(graphicopt.height)
     }

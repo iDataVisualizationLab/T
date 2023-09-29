@@ -24,6 +24,7 @@ class Simulation {
         if (!this.isRealTime) {
             console.time('load data')
             let updatePromise=(_.isString(url)?d3.json(url):url).then(d=>preadjustdata(d)).then((data) => {
+                console.log("dataaaaaaaaa", data)
                 if (data.time_stamp[0] > 999999999999999999)
                     data.time_stamp = data.time_stamp.map(d => new Date((+d) / 1000000));
                 else if (data.time_stamp[0] < 9999999999) {

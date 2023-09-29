@@ -173,9 +173,19 @@ function initdraw() {
     d3.select('#showScore').on('change',function(){
 
     })
+
+    d3.select('#shareSpace')
+    // .attr('checked', drawObject.shareSpace())
+        .on('change', function () {
+            // drawObject.shareSpace(this.checked);
+            drawObject.draw();
+        })
+
 }
 
-
+function isShareSpace() {
+    return (d3.select('#shareSpace').node()??{checked:false}).checked;
+}
 function getColorScale() {
     if (drawObject.graphicopt().colorMode !== 'rack') {
         serviceName = vizservice[serviceSelected].text;

@@ -64,7 +64,7 @@ function updateScatterplots(m) {
 
     var dataPoints = [];
 
-    /*
+    console.log(m , dataS.nodes_info)
     for (var key in dataS.nodes_info){
         var obj = {};
         obj.year = m;
@@ -78,54 +78,54 @@ function updateScatterplots(m) {
         dataPoints.push(obj);
     }
 
-    svg2.selectAll("circle")
-        .data(computes)
-        .enter().append("circle")
-        .attr("class", function (d, i) {
-            return "dataPoint" + i;
-        })
-        .attr("cx", function (d) {
-            var vName = metaData.listOfVariables[var1];
-            if (d[vName]!=undefined){
-                var value = d[vName][m] /metaData.listOfMaxs[var1];
-                if (isNaN(value))
-                    return 0;
-                else{
-                    return margin + 1.5 + value* (size - 3);
-                }
-            }
-        })
-        .attr("cy", function (d, i) {
-            var vName = metaData.listOfVariables[var2];
-            if (d[vName]!=undefined) {
-                var value = d[vName][m] / metaData.listOfMaxs[var2];
-                if (isNaN(value))
-                    return 0;
-                else {
-                    return margin + size - 1.5 - value * (size - 3);
-                }
-            }
-        })
-        .attr("r", function (d) {
-            var vName1 = metaData.listOfVariables[var1];
-            var vName2 = metaData.listOfVariables[var2];
-            if (d[vName1]==undefined || d[vName2]==undefined)
-               return 0;
-            else
-                return 0.8;
-        })
-        .style("stroke", "#fff")
-        .style("stroke-width", 0.02)
-        .style("stroke-opacity", 0.8)
-        .style("fill", function (d) {
-                return "#000";
-        })
-        .style("fill-opacity", pointOpacity)
-        .on("mouseover", function (d, i) {
-            brushingDataPoints(d, i);
-        })
-        .on("mouseout", function (d) {
-            hideTip(d);
-        });*/
-    setExploreEvent(svg2, dataPoints, dataS.Variables);
+    // svg2.selectAll("circle")
+    //     .data(computes)
+    //     .enter().append("circle")
+    //     .attr("class", function (d, i) {
+    //         return "dataPoint" + i;
+    //     })
+    //     .attr("cx", function (d) {
+    //         var vName = metaData.listOfVariables[var1];
+    //         if (d[vName]!=undefined){
+    //             var value = d[vName][m] /metaData.listOfMaxs[var1];
+    //             if (isNaN(value))
+    //                 return 0;
+    //             else{
+    //                 return margin + 1.5 + value* (size - 3);
+    //             }
+    //         }
+    //     })
+    //     .attr("cy", function (d, i) {
+    //         var vName = metaData.listOfVariables[var2];
+    //         if (d[vName]!=undefined) {
+    //             var value = d[vName][m] / metaData.listOfMaxs[var2];
+    //             if (isNaN(value))
+    //                 return 0;
+    //             else {
+    //                 return margin + size - 1.5 - value * (size - 3);
+    //             }
+    //         }
+    //     })
+    //     .attr("r", function (d) {
+    //         var vName1 = metaData.listOfVariables[var1];
+    //         var vName2 = metaData.listOfVariables[var2];
+    //         if (d[vName1]==undefined || d[vName2]==undefined)
+    //            return 0;
+    //         else
+    //             return 0.8;
+    //     })
+    //     .style("stroke", "#fff")
+    //     .style("stroke-width", 0.02)
+    //     .style("stroke-opacity", 0.8)
+    //     .style("fill", function (d) {
+    //             return "#000";
+    //     })
+    //     .style("fill-opacity", pointOpacity)
+    //     .on("mouseover", function (d, i) {
+    //         brushingDataPoints(d, i);
+    //     })
+    //     .on("mouseout", function (d) {
+    //         hideTip(d);
+    //     });
+    setExploreEvent(svg2, dataPoints, dataS.Variables, m);
 }
