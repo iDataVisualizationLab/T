@@ -6,6 +6,7 @@
     <!-- Load d3.js -->
     <script src="https://d3js.org/d3.v4.js"></script>
     <script src='https://cdn.plot.ly/plotly-2.26.0.min.js'></script>
+    
 
     <title>PCA</title>
 
@@ -16,6 +17,7 @@
     <div id='pca'></div>
     <script>
         var currentMode = 'markers'; // Initial mode
+        var currentColorParam = 'no_job_id';
     
         // var params = location.href.split('?')[1].split('&');
         // var data_no = params[x].split('=')[1].toString();
@@ -23,29 +25,36 @@
         d3.json("./data/pca.json", function (error, rawData) {
             var params = location.href.split('?')[1].split('&');
             console.log(params[0].split('=')[1])
-            var data = rawData[params[0].split('=')[1]]
+            var selectedData  = rawData[params[0].split('=')[1]]
             // console.log(data)
             // Create an array of distinct colors for each node
 
-            var trace1 = {
-                x: data.pc1,
-                y: data.pc2,
+            var data = [{
+                x: selectedData.pc1,
+                y: selectedData.pc2,
                 mode: 'markers',
-                // mode: 'markers+text',
                 type: 'scatter',
-                text: data.nodes,
+                text: selectedData.nodes,
+                hovertext: selectedData.nodes.map(function (node, index) {
+                    return 'Node: ' + node + ' #Jobs: ' + selectedData.no_job_id[index] + ' Amount of cores: ' + selectedData.amount_cores[index];
+                }),
                 textposition: 'top center',
                 textfont: {
                     family: 'Raleway, sans-serif'
                 },
                 marker: {
+                    showscale: true,
+                    colorbar: {
+                        x: 10,
+                        title: 'Colored by #jobs',
+                    },
                     size: 12,
-                    color: data.nodes,
+                    color: selectedData.no_job_id,
                     colorscale: 'Viridis'
                 }
-            };
+            }];
 
-            var data = [trace1];
+            // var data = [trace1];
             var updatemenus = [
                 {
                     buttons: [
@@ -58,7 +67,7 @@
                             args: ['mode', 'markers+text'],
                             label: 'Show Label',
                             method: 'restyle'
-                        }
+                        },
                     ],
                     direction: 'left',
                     pad: { 'r': 10, 't': 10 },
@@ -68,26 +77,49 @@
                     xanchor: 'left',
                     y: 1.2,
                     yanchor: 'top'
-                }
+                },
+                {
+                    
+                    x: 0.13,
+                    xanchor: 'left',
+                    y: 1.2,
+                    yanchor: 'top',
+                    direction: 'down',
+                    pad: { 'r': 10, 't': 10 },
+                    showactive: true,
+                    buttons: [
+                        {
+                            method: 'restyle',
+                            args: [
+                                {
+                                    'marker.color': [selectedData.no_job_id],
+                                    'marker.colorbar.title.text': 'Colored by #jobs',
+                                    'marker.showscale': true,
+                                }
+                            ],
+                            label: 'Colored by #jobs'
+                        },
+                        {
+                            method: 'restyle',
+                            args: [
+                                {
+                                    'marker.color': [selectedData.amount_cores],
+                                    'marker.colorbar.title.text': 'Colored by #cores',
+                                    'marker.showscale': true,
+                                }
+                            ],
+                            label: 'Colored by #cores'
+                        }
+                    ]
+                },
             ]
-            // var annotations = [
-            //     {
-            //         text: 'Options:',
-            //         x: 0,
-            //         y: 1.085,
-            //         yref: 'paper',
-            //         align: 'left',
-            //         showarrow: false
-            //     }
-            // ]
 
             var layout = {
                 title: 'PCA',
-    margin: {t: 0, b: 0, l: 0, r: 0},
+                margin: {t: 0, b: 0, l: 0, r: 0},
                 updatemenus: updatemenus,
-                // annotations: annotations,
                 xaxis: { title: 'PC1' },
-                yaxis: { title: 'PC2' }
+                yaxis: { title: 'PC2' },
             };
 
             Plotly.newPlot('pca', data, layout);

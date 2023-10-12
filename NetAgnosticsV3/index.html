@@ -5,11 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js" integrity="sha512-g2TeAWw5GPnX7z0Kn8nFbYfeHcvAu/tx6d6mrLe/90mkCxO+RcptyYpksUz35EO337F83bZwcmUyHiHamspkfg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    
     <title>Control Panel</title>
 </head>
 <body>
     <div class="control-panel" id="controlPanel">
-        <div class="burger-menu" id="burgerMenu" onclick="toggleContent()">☰</div>
+        <div class="burger-menu" id="burgerMenu" onclick="toggleContent()">
+            <h2 style="margin-bottom: 0px;margin-top: 0px;">☰</h2>
+        </div>
         <div class="content" id="content">
             <!-- Content of the control panel -->
             <h2>Control Panel</h2>

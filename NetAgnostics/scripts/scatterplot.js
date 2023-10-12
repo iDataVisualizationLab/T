@@ -64,7 +64,7 @@ function updateScatterplots(m) {
 
     var dataPoints = [];
 
-    console.log(m , dataS.nodes_info)
+    // console.log(m , dataS.nodes_info)
     for (var key in dataS.nodes_info){
         var obj = {};
         obj.year = m;

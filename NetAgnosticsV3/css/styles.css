@@ -20,8 +20,8 @@ body {
 
 .burger-menu {
     position: absolute;
-    top: 5px;
-    right: 5px;
+    top: 7px;
+    right: 13px;
     cursor: pointer;
 }
 
